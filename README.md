@@ -1,4 +1,4 @@
-##Legion
+Legion
 
 Step1. Multi-gpu acceleration for GNN system
 
