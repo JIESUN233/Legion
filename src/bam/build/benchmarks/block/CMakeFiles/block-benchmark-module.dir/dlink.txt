@@ -1,0 +1,1 @@
+/usr/local/cuda-11.7/bin/nvcc    -Xcompiler=-fPIC -Wno-deprecated-gpu-targets -shared -dlink CMakeFiles/block-benchmark-module.dir/block-benchmark-module_generated_main.cu.o -o CMakeFiles/block-benchmark-module.dir/cmake_device_link.o  -L/usr/local/cuda-11.7/targets/x86_64-linux/lib/stubs  -L/usr/local/cuda-11.7/targets/x86_64-linux/lib 
