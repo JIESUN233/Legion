@@ -16,15 +16,15 @@ All platforms are bare-metal machines.
 Kc means the number of groups in which GPUs connect each other. And Kg means the number of GPUs in each group.
 
 ## Hardware We Can Support Now:
-The platforms above are currently unavailable. Alternatively, we offer a stable machine with fewer GPUs:
+Unfortunately, the platforms above are currently unavailable. Alternatively, we offer a stable machine with fewer GPUs:
 | Platform | CPU-Info | #sockets | #NUMA nodes | CPU Memory | PCIe | GPUs | NVLinks |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| Siton2 | 104*Intel(R) Xeon(R) Gold 5320 CPU @2.2GHZ | 2 | 2 | 500GB | PCIe 4.0x16, 2*PCIe switches, each connecting 4 GPUs | 2x40GB-A100 | NVLink Bridges |
+| Siton2 | 104*Intel(R) Xeon(R) Gold 5320 CPU @2.2GHZ | 2 | 2 | 500GB | PCIe 4.0x16, 2*PCIe switches, each connecting 4 GPUs | 2x40GB-A100 | NVLink Bridges, Kc = 1, Kg = 2 |
 
 ## Software: 
 1. Nvidia Driver Version: 515.43.04(DGX-A100, Siton, Siton2), 470.82.01(V100)
 
-2. CUDA 11.3(DGX-A100, Siton), CUDA 10.1(DGX-V100), CUDA 11.7(Siton2)
+2. CUDA 11.3(DGX-A100, Siton), CUDA 10.1(DGX-V100), **CUDA 11.7(Siton2)**
 
 3. GCC/G++ 9.4.0+
 
@@ -34,11 +34,11 @@ The platforms above are currently unavailable. Alternatively, we offer a stable 
 ```
 wget https://download.opensuse.org/repositories/home:/opcm/xUbuntu_18.04/amd64/pcm_0-0+651.1_amd64.deb
 ```
-6. pytorch-cu113(DGX-A100, Siton), pytorch-cu101(DGX-V100), pytorch-cu117(Siton2)
+6. pytorch-cu113(DGX-A100, Siton), pytorch-cu101(DGX-V100), **pytorch-cu117(Siton2)**
 ```
 $ pip3 install torch-cu1xx
 ```
-7. dgl 0.9.1(DGX-A100, Siton, DGX-V100) dgl 1.0.1(Siton2)
+7. dgl 0.9.1(DGX-A100, Siton, DGX-V100) **dgl 1.0.1(Siton2)**
 ```
 $ pip3 install dgl
 ```
@@ -99,20 +99,17 @@ This will just make libxtrapulp.a static library for use with xtrapulp.h
 ```
 
 ## Run Legion
-There are several steps to train a GNN model in Legion. Before running Legion, please clone the source code:
+There are two steps to train a GNN model in Legion:
 
+Running the sampling server of Legion. In Siton2, we support two mode: NVLink, no NVLink.
 ```
-1. $ cd legion-atc-artifacts/
-```
-Running the sampling server of Legion. 
-```
-2. $ python3 legion_server.py
+1. $ cd legion-atc-artifacts/ && python3 legion_server.py
 ```
 After Legion outputs "System is ready for serving", run the training backend.
 
 "legion_graphsage.py" and "legion_gcn.py" trains the GraphSAGE/GCN models, respectively.
 ```
-3. $ cd pytorch-extension/ && python3 legion_graphsage.py
+2. $ cd pytorch-extension/ && python3 legion_graphsage.py
 ```
 For more parameter settings, please refer to legion-atc-artifacts/pytorch_extension/README.md
 
