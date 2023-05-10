@@ -86,7 +86,7 @@ To make:
 Then set the meta data of specific datasets:
 for example, /datasets_path/products/ 8000 2449029 123718280 100 196615 39323 2213091 400000000 100
 
-After setting up meta data
+After setting up meta data, run the sampling server in Legion.
 ```
 2. $ ./src/legion #numberofGPUs #Kg
 ```
