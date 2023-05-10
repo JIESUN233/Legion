@@ -21,6 +21,8 @@ Unfortunately, the platforms above are currently unavailable. Alternatively, we 
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | Siton2 | 104*Intel(R) Xeon(R) Gold 5320 CPU @2.2GHZ | 2 | 2 | 500GB | PCIe 4.0x16, 2*PCIe switches, each connecting 4 GPUs | 2x40GB-A100 | NVLink Bridges, Kc = 1, Kg = 2 |
 
+We will offer the way to access Siton2 in ATC artifacts submission. 
+
 ## Software: 
 1. Nvidia Driver Version: 515.43.04(DGX-A100, Siton, Siton2), 470.82.01(V100)
 
