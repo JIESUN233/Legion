@@ -28,13 +28,21 @@ The platforms above are currently unavailable. Alternatively, we offer a stable 
 
 3. GCC/G++ 9.4.0+
 
-4. Intel PCM
+4. OS: Ubuntu(other linux systems are ok)
 
-5. pytorch-cu113(DGX-A100, Siton), pytorch-cu101(DGX-V100), pytorch-cu117(Siton2)
-
-6. dgl 0.9.1(DGX-A100, Siton, DGX-V100) dgl 1.0.1(Siton2)
-
-7. MPI
+5. Intel PCM(according to OS version)
+```
+wget https://download.opensuse.org/repositories/home:/opcm/xUbuntu_18.04/amd64/pcm_0-0+651.1_amd64.deb
+```
+6. pytorch-cu113(DGX-A100, Siton), pytorch-cu101(DGX-V100), pytorch-cu117(Siton2)
+```
+$ pip3 install torch-cu1xx
+```
+7. dgl 0.9.1(DGX-A100, Siton, DGX-V100) dgl 1.0.1(Siton2)
+```
+$ pip3 install dgl
+```
+8. MPI
 
 ## Dataset: 
 | Datasets | PR | PA | CO | UKS | UKL | CL |
@@ -45,29 +53,30 @@ The platforms above are currently unavailable. Alternatively, we offer a stable 
 | Topology Storage | 640MB | 6.4GB | 7.2GB | 22GB | 189GB | 170GB |
 | Feature Storage | 960MB | 56GB | 65GB | 136GB | 400GB | 512GB |
 
-## How to run Experiment: Three steps.
-There are several steps to train a GNN model in Legion. Before running Legion, please clone the source code:
+## Build Legion from Source.
 ```
 $ git clone https://github.com/RC4ML/legion.git
 ```
 
-### Graph Partitioning: XtraPulp
+### Prepare Graph Partitioning Tool: XtraPulp
 Prepare MPI in the machine and download XtraPulp
 ```
 1. $ git clone https://github.com/luoxiaojian/xtrapulp.git
 ```
-```
+
 To make:
 
 1.) Set MPICXX in Makefile to your c++ compiler, adjust CXXFLAGS if necessary
 -OpenMP 3.1 support is required for parallel execution
 -No other dependencies needed
 
-2.) $ make 
--This will make xtrapulp executable and library
-
-3.) $ make libxtrapulp
--This will just make libxtrapulp.a static library for use with xtrapulp.h
+Then make xtrapulp executable and library
+```
+2. $cd xtrapulp/ && make 
+```
+This will just make libxtrapulp.a static library for use with xtrapulp.h
+```
+3. $ make libxtrapulp
 ```
 
 
@@ -79,24 +88,33 @@ To make:
 
 3. $ source env.sh
 ```
-### Running
+
+## Using Pre-installed Legion
+```
+1. $ cd legion-atc-artifacts/src/
+
+2. $ source env.sh
+```
+
+## Run Legion
+There are several steps to train a GNN model in Legion. Before running Legion, please clone the source code:
+
 ```
 1. $ cd legion-atc-artifacts/
 ```
-Then set the meta data of specific datasets:
-for example, /datasets_path/products/ 8000 2449029 123718280 100 196615 39323 2213091 400000000 100
-
-After setting up meta data, run the sampling server in Legion.
+Running the sampling server of Legion. 
 ```
-2. $ ./src/legion #numberofGPUs #Kg
+2. $ python3 legion_server.py
 ```
 After Legion outputs "System is ready for serving", run the training backend.
+
+"legion_graphsage.py" and "legion_gcn.py" trains the GraphSAGE/GCN models, respectively.
 ```
-3. $ cd pytorch-extension/
+3. $ cd pytorch-extension/ && python3 legion_graphsage.py
 ```
-legion_graphsage.py, legion_gcn.py trains the GraphSAGE/GCN models, respectively.
-```
-4. $ python3 legion_graphsage.py
-```
+For more parameter settings, please refer to legion-atc-artifacts/pytorch_extension/README.md
+
+
+
 
 
