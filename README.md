@@ -55,7 +55,7 @@ $ pip3 install dgl
 | Topology Storage | 640MB | 6.4GB | 7.2GB | 22GB | 189GB | 170GB |
 | Feature Storage | 960MB | 56GB | 65GB | 136GB | 400GB | 512GB |
 
-We store the pre-processed datasets in path: /legion-dataset/. 
+We store the pre-processed datasets in path of Siton2: /legion-dataset/. We also place the partitioning result for demos in Siton2 so that you needn't wait a lot of time for partitioning.
 
 ## Build Legion from Source.
 ```
