@@ -1,7 +1,7 @@
-Legion-ATC23-Artifacts
 
 
-# Legion
+
+# Legion-ATC23-Artifacts
 Legion is a system for large-scale GNN training.
 
 
