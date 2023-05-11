@@ -108,7 +108,7 @@ This will just make libxtrapulp.a static library for use with xtrapulp.h
 There are three steps to train a GNN model in Legion:
 ### Step 1. Open msr by root for PCM:
 ```
-$ modprobe msr
+1. $ modprobe msr
 ```
 
 ### Step 2. Run Legion sampling server
@@ -127,7 +127,6 @@ You can change "PR" into "PA", "CO", "UKS", "UKL", "CL".
     argparser.add_argument('--gpu_number', type=int, default=1)
     argparser.add_argument('--cache_memory', type=int, default=200000000)
     argparser.add_argument('--usenvlink', type=bool, default=True)
-
 ```
 2. $ cd legion-atc-artifacts/ && python3 legion_server.py
 ```
@@ -148,14 +147,10 @@ For specific numbers, please refer to Table 3(dataset).
     argparser.add_argument('--drop_rate', type=float, default=0.5)
     argparser.add_argument('--learning_rate', type=float, default=0.003)
     argparser.add_argument('--epoch', type=int, default=10)
-
 Note that the train_batch_size, hops_num, nbrs_num, epoch should be the same as sampling hyper-parameters
-
 ```
 3. $ cd pytorch-extension/ && python3 legion_graphsage.py
 ```
-
-For more parameter settings, please refer to legion-atc-artifacts/pytorch_extension/README.md
 
 
 
