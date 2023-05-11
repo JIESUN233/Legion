@@ -135,13 +135,13 @@ You can change "PR" into "PA", "CO", "UKS", "UKL", "CL".
 After Legion outputs "System is ready for serving", run the training backend by artifact-user.
 "legion_graphsage.py" and "legion_gcn.py" trains the GraphSAGE/GCN models, respectively.
 User can modify these parameters:
-### Set dataset statistics
+#### Set dataset statistics
 For specific numbers, please refer to Table 3(dataset).
 ```
     argparser.add_argument('--class_num', type=int, default=47)
     argparser.add_argument('--features_num', type=int, default=100)
 ```
-### Set GNN hyper-parameters
+#### Set GNN hyper-parameters
     argparser.add_argument('--train_batch_size', type=int, default=8000)
     argparser.add_argument('--hidden_dim', type=int, default=256)
     argparser.add_argument('--hops_num', type=int, default=2)
