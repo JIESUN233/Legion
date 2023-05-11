@@ -58,8 +58,15 @@ def Run(args):
     with open("meta_config","w") as file:
         file.write("{} {} {} {} {} {} {} {} {} {} {}".format(path, args.train_batch_size, vertices_num, edges_num, features_dim, train_set_num, valid_set_num, test_set_num, args.cache_memory, args.epoch, int(args.usenvlink)))
 
+
     gpu_number = args.gpu_number
-    cache_agg_mode = 0
+    if args.usenvlink:
+        if gpu_number >= 2:
+            cache_agg_mode = 1
+        else:
+            cache_agg_mode = 0
+    else:
+        cache_agg_mode = 0
     os.system("./src/legion {} {}".format(gpu_number, cache_agg_mode))
 
 
