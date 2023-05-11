@@ -132,7 +132,7 @@ You can change "PR" into "PA", "CO", "UKS", "UKL", "CL".
 ```
 
 ### Step 3. Run Legion training backend
-After Legion outputs "System is ready for serving", run the training backend by artifact-user.
+**After Legion outputs "System is ready for serving",** run the training backend by artifact-user.
 "legion_graphsage.py" and "legion_gcn.py" trains the GraphSAGE/GCN models, respectively.
 User can modify these parameters:
 #### Set dataset statistics
