@@ -106,31 +106,33 @@ This will just make libxtrapulp.a static library for use with xtrapulp.h
 
 ## Run Legion
 There are three steps to train a GNN model in Legion:
-
-Open msr by root for PCM:
+### Step 1. Open msr by root for PCM:
 ```
 $ modprobe msr
 ```
 
+### Step 2. Run Legion sampling server
 Running the sampling server of Legion by root. In Siton2, we support two mode: NVLink, no NVLink.
 User can modify these parameters:
-### Choose dataset
+#### Choose dataset
     argparser.add_argument('--dataset_path', type=str, default="/home/atc-artifacts-user/datasets")
     argparser.add_argument('--dataset', type=str, default="PR")
 You can change "PR" into "PA", "CO", "UKS", "UKL", "CL".
-### Set sampling hyper-parameters
+#### Set sampling hyper-parameters
     argparser.add_argument('--train_batch_size', type=int, default=8000)
     argparser.add_argument('--hops_num', type=int, default=2)
     argparser.add_argument('--nbrs_num', type=list, default=[25, 10])
     argparser.add_argument('--epoch', type=int, default=10)
-### Set GPU number, GPU meory limitation and NVLink usage
+#### Set GPU number, GPU meory limitation and NVLink usage
     argparser.add_argument('--gpu_number', type=int, default=1)
     argparser.add_argument('--cache_memory', type=int, default=200000000)
     argparser.add_argument('--usenvlink', type=bool, default=True)
 
 ```
-1. $ cd legion-atc-artifacts/ && python3 legion_server.py
+2. $ cd legion-atc-artifacts/ && python3 legion_server.py
 ```
+
+### Step 3. Run Legion training backend
 After Legion outputs "System is ready for serving", run the training backend by artifact-user.
 "legion_graphsage.py" and "legion_gcn.py" trains the GraphSAGE/GCN models, respectively.
 User can modify these parameters:
@@ -150,7 +152,7 @@ For specific numbers, please refer to Table 3(dataset).
 Note that the train_batch_size, hops_num, nbrs_num, epoch should be the same as sampling hyper-parameters
 
 ```
-2. $ cd pytorch-extension/ && python3 legion_graphsage.py
+3. $ cd pytorch-extension/ && python3 legion_graphsage.py
 ```
 
 For more parameter settings, please refer to legion-atc-artifacts/pytorch_extension/README.md
