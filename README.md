@@ -2,10 +2,10 @@
 
 
 # Legion-ATC23-Artifacts
-Legion is a system for large-scale GNN training. Legion uses GPU to accelerate graph sampling, feature extraction and GNN training. And Legion utilizes multi-GPU memory as unified cache to minimize PCIe traffic.
+Legion is a system for large-scale GNN training. Legion uses GPU to accelerate graph sampling, feature extraction and GNN training. And Legion utilizes multi-GPU memory as unified cache to minimize PCIe traffic. In this repo, we provide Legion's prototype and show how to run Legion.
 
 
-## Hardware in Our Paper:
+## Hardware in Our Paper
 All platforms are bare-metal machines.
 Table 1
 | Platform | CPU-Info | #sockets | #NUMA nodes | CPU Memory | PCIe | GPUs | NVLinks |
@@ -16,7 +16,7 @@ Table 1
 
 Kc means the number of groups in which GPUs connect each other. And Kg means the number of GPUs in each group.
 
-## Hardware We Can Support Now:
+## Hardware We Can Support Now
 Unfortunately, the platforms above are currently unavailable. Alternatively, we offer a stable machine with fewer GPUs:
 Table 2
 | Platform | CPU-Info | #sockets | #NUMA nodes | CPU Memory | PCIe | GPUs | NVLinks |
@@ -25,12 +25,14 @@ Table 2
 
 We will offer the way to access Siton2 in ATC artifacts submission. 
 
-## Software: 
+## Software 
+Legion's software is light-weighted and portable. Here we list some tested environment.
+
 1. Nvidia Driver Version: 515.43.04(DGX-A100, Siton, Siton2), 470.82.01(V100)
 
 2. CUDA 11.3(DGX-A100, Siton), CUDA 10.1(DGX-V100), **CUDA 11.7(Siton2)**
 
-3. GCC/G++ 9.4.0+
+3. GCC/G++ 9.4.0+(DGX-A100, Siton, DGX-V100), GCC/G++ 7.5.0+(Siton2)
 
 4. OS: Ubuntu(other linux systems are ok)
 
@@ -38,17 +40,17 @@ We will offer the way to access Siton2 in ATC artifacts submission.
 ```
 wget https://download.opensuse.org/repositories/home:/opcm/xUbuntu_18.04/amd64/pcm_0-0+651.1_amd64.deb
 ```
-6. pytorch-cu113(DGX-A100, Siton), pytorch-cu101(DGX-V100), **pytorch-cu117(Siton2)**
+6. pytorch-cu113(DGX-A100, Siton), pytorch-cu101(DGX-V100), **pytorch-cu117(Siton2)**, torchmetrics
 ```
 $ pip3 install torch-cu1xx
 ```
-7. dgl 0.9.1(DGX-A100, Siton, DGX-V100) **dgl 1.0.1(Siton2)**
+7. dgl 0.9.1(DGX-A100, Siton, DGX-V100) **dgl 1.1.0(Siton2)**
 ```
 $ pip3 install dgl
 ```
 8. MPI
 
-## Dataset: 
+## Dataset
 Table 3
 | Datasets | PR | PA | CO | UKS | UKL | CL |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -89,12 +91,21 @@ This will just make libxtrapulp.a static library for use with xtrapulp.h
 
 
 ### Legion Compiling
+#### Firstly, build Legion's sampling server
 ```
 1. $ cd legion-atc-artifacts/src/
 
 2. $ make cuda && make main
 
 3. $ source env.sh
+```
+#### Secondly, build Legion's training backend
+```
+4. $ cd legion-atc-artifacts/pytorch_extension/
+```
+Change into root user and execute:
+```
+5. $ python3 setup.py install
 ```
 
 ## Using Pre-installed Legion
@@ -106,7 +117,7 @@ This will just make libxtrapulp.a static library for use with xtrapulp.h
 
 ## Run Legion
 There are three steps to train a GNN model in Legion:
-### Step 1. Open msr by root for PCM:
+### Step 1. Open msr by root for PCM
 ```
 1. $ modprobe msr
 ```
@@ -132,11 +143,11 @@ You can change "PR" into "PA", "CO", "UKS", "UKL", "CL".
 ```
 This figure shows that PCM is working.
 
-![1683783095308](https://github.com/JIESUN233/Legion/assets/109936863/e285eb4b-cc7c-4240-b58d-3084b74fbde2)
+![7164f5c512559008fda789051ee3846](https://github.com/JIESUN233/Legion/assets/109936863/a5c6dd95-02fb-48b5-9c53-7af8f2734346)
 
 This figure shows the system outputs including dataset statistics, training statistics and cache management outputs.
 
-![image](https://github.com/JIESUN233/Legion/assets/109936863/fbbcf62a-0392-4bb7-8dc0-84b130e806ed)
+![fe485222ae227d406bab1068eb1bed9](https://github.com/JIESUN233/Legion/assets/109936863/0c8476a8-81b7-4bbc-98a5-e926e9a80931)
 
 ### Step 3. Run Legion training backend
 **After Legion outputs "System is ready for serving",** run the training backend by artifact-user.
@@ -160,8 +171,11 @@ Note that the train_batch_size, hops_num, nbrs_num, epoch should be the same as 
 ```
 3. $ cd pytorch-extension/ && python3 legion_graphsage.py
 ```
+When training backend successfully runs, system outputs information including epoch time, validation accuracy, and testing accuracy.
+![30685d2d9a729ce84d52e8b72fcc1cb](https://github.com/JIESUN233/Legion/assets/109936863/dc93be15-6576-4dd5-ab70-477741b5df28)
 
-If SEGMENT FAULT occurs, please remove semaphores in /dev/shm.
+If SEGMENT-FAULT occurs or you kill Legion's processes, please remove semaphores in /dev/shm, for example:
+![14b24058fbcfe5bf0648f0d7082686a](https://github.com/JIESUN233/Legion/assets/109936863/c80f6453-6eda-4978-8655-3475cf045457)
 
 
 
