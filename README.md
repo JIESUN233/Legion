@@ -2,7 +2,7 @@
 
 
 # Legion-ATC23-Artifacts
-Legion is a system for large-scale GNN training.
+Legion is a system for large-scale GNN training. Legion use GPU to accelerate graph sampling, feature extraction and GNN training. And Legion use multi-GPU memory as unified cache to minimize PCIe traffic.
 
 
 ## Hardware in Our Paper:
