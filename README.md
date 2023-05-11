@@ -2,7 +2,7 @@
 
 
 # Legion-ATC23-Artifacts
-Legion is a system for large-scale GNN training. Legion uses GPU to accelerate graph sampling, feature extraction and GNN training. And Legion utilizes multi-GPU memory as unified cache to minimize PCIe traffic. In this repo, we provide Legion's prototype and show how to run Legion.
+Legion is a system for large-scale GNN training. Legion uses GPU to accelerate graph sampling, feature extraction and GNN training. And Legion utilizes multi-GPU memory as unified cache to minimize PCIe traffic. In this repo, we provide Legion's prototype and show how to run Legion. We provide two ways to build Legion: 1. building from source, 2. using pre-installed Legion. For artifacts evaluation, we recommend using the pre-installed Legion.
 
 
 ## Hardware in Our Paper
@@ -38,7 +38,7 @@ Legion's software is light-weighted and portable. Here we list some tested envir
 
 5. Intel PCM(according to OS version)
 ```
-wget https://download.opensuse.org/repositories/home:/opcm/xUbuntu_18.04/amd64/pcm_0-0+651.1_amd64.deb
+$ wget https://download.opensuse.org/repositories/home:/opcm/xUbuntu_18.04/amd64/pcm_0-0+651.1_amd64.deb
 ```
 6. pytorch-cu113(DGX-A100, Siton), pytorch-cu101(DGX-V100), **pytorch-cu117(Siton2)**, torchmetrics
 ```
@@ -46,11 +46,11 @@ $ pip3 install torch-cu1xx
 ```
 7. dgl 0.9.1(DGX-A100, Siton, DGX-V100) **dgl 1.1.0(Siton2)**
 ```
-$ pip3 install dgl
+$ pip3 install  dgl -f https://data.dgl.ai/wheels/cu1xx/repo.html
 ```
 8. MPI
 
-## Dataset
+## Datasets
 Table 3
 | Datasets | PR | PA | CO | UKS | UKL | CL |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -63,7 +63,76 @@ Table 3
 
 We store the pre-processed datasets in path of Siton2: /legion-dataset/. We also place the partitioning result for demos in Siton2 so that you needn't wait a lot of time for partitioning.
 
-## Build Legion from Source.
+## Using Pre-installed Legion
+There are four steps to train a GNN model in Legion. In these steps, you need to change into root user of Siton2.
+### Step 1. Add environment variables temporarily
+```
+1. $ cd legion-atc-artifacts/src/ && source env.sh
+```
+### Step 2. Open msr by root for PCM
+```
+2. $ modprobe msr
+```
+### Step 3. Run Legion sampling server
+In Siton2, we can test Legion in two mode: NVLink, no NVLink.
+User can modify these parameters:
+#### Choose dataset
+    argparser.add_argument('--dataset_path', type=str, default="/home/atc-artifacts-user/datasets")
+    argparser.add_argument('--dataset', type=str, default="PR")
+You can change "PR" into "PA", "CO", "UKS", "UKL", "CL".
+#### Set sampling hyper-parameters
+    argparser.add_argument('--train_batch_size', type=int, default=8000)
+    argparser.add_argument('--epoch', type=int, default=10)
+#### Set GPU number, GPU meory limitation and whether to use NVLinks
+    argparser.add_argument('--gpu_number', type=int, default=1)
+    argparser.add_argument('--cache_memory', type=int, default=200000000)
+    argparser.add_argument('--usenvlink', type=bool, default=True)
+#### Start server
+```
+3. $ cd legion-atc-artifacts/ && python3 legion_server.py
+```
+#### Sampling server functionality
+This figure shows that PCM is working.
+
+![7164f5c512559008fda789051ee3846](https://github.com/JIESUN233/Legion/assets/109936863/a5c6dd95-02fb-48b5-9c53-7af8f2734346)
+
+This figure shows the system outputs including dataset statistics, training statistics and cache management outputs.
+
+![fe485222ae227d406bab1068eb1bed9](https://github.com/JIESUN233/Legion/assets/109936863/0c8476a8-81b7-4bbc-98a5-e926e9a80931)
+
+### Step 4. Run Legion training backend
+**After Legion outputs "System is ready for serving",** run the training backend by artifact-user.
+"legion_graphsage.py" and "legion_gcn.py" trains the GraphSAGE/GCN models, respectively.
+User can modify these parameters:
+#### Set dataset statistics
+For specific numbers, please refer to Table 3(dataset).
+```
+    argparser.add_argument('--class_num', type=int, default=47)
+    argparser.add_argument('--features_num', type=int, default=100)
+```
+#### Set GNN hyper-parameters
+    argparser.add_argument('--train_batch_size', type=int, default=8000)
+    argparser.add_argument('--hidden_dim', type=int, default=256)
+    argparser.add_argument('--drop_rate', type=float, default=0.5)
+    argparser.add_argument('--learning_rate', type=float, default=0.003)
+    argparser.add_argument('--epoch', type=int, default=10)
+Note that the train_batch_size and epoch should be the same as sampling hyper-parameters
+#### Start training backend
+```
+3. $ cd pytorch-extension/ && python3 legion_graphsage.py
+```
+#### Training backend functionality
+When training backend successfully runs, system outputs information including epoch time, validation accuracy, and testing accuracy.
+![30685d2d9a729ce84d52e8b72fcc1cb](https://github.com/JIESUN233/Legion/assets/109936863/dc93be15-6576-4dd5-ab70-477741b5df28)
+
+![image](https://github.com/JIESUN233/Legion/assets/109936863/199863c0-2ca2-4cc3-8603-f15e6b4aa2b5)
+
+
+If SEGMENT-FAULT occurs or you kill Legion's processes, please remove semaphores in /dev/shm, for example:
+![14b24058fbcfe5bf0648f0d7082686a](https://github.com/JIESUN233/Legion/assets/109936863/c80f6453-6eda-4978-8655-3475cf045457)
+
+
+## Build Legion from Source
 ```
 $ git clone https://github.com/JIESUN233/Legion.git
 ```
@@ -97,7 +166,6 @@ This will just make libxtrapulp.a static library for use with xtrapulp.h
 
 2. $ make cuda && make main
 
-3. $ source env.sh
 ```
 #### Secondly, build Legion's training backend
 ```
@@ -108,76 +176,7 @@ Change into root user and execute:
 5. $ python3 setup.py install
 ```
 
-## Using Pre-installed Legion
-```
-1. $ cd legion-atc-artifacts/src/
-
-2. $ source env.sh
-```
-
-## Run Legion
-There are three steps to train a GNN model in Legion:
-### Step 1. Open msr by root for PCM
-```
-1. $ modprobe msr
-```
-
-### Step 2. Run Legion sampling server
-Running the sampling server of Legion by root. In Siton2, we support two mode: NVLink, no NVLink.
-User can modify these parameters:
-#### Choose dataset
-    argparser.add_argument('--dataset_path', type=str, default="/home/atc-artifacts-user/datasets")
-    argparser.add_argument('--dataset', type=str, default="PR")
-You can change "PR" into "PA", "CO", "UKS", "UKL", "CL".
-#### Set sampling hyper-parameters
-    argparser.add_argument('--train_batch_size', type=int, default=8000)
-    argparser.add_argument('--hops_num', type=int, default=2)
-    argparser.add_argument('--nbrs_num', type=list, default=[25, 10])
-    argparser.add_argument('--epoch', type=int, default=10)
-#### Set GPU number, GPU meory limitation and whether to use NVLinks
-    argparser.add_argument('--gpu_number', type=int, default=1)
-    argparser.add_argument('--cache_memory', type=int, default=200000000)
-    argparser.add_argument('--usenvlink', type=bool, default=True)
-```
-2. $ cd legion-atc-artifacts/ && python3 legion_server.py
-```
-This figure shows that PCM is working.
-
-![7164f5c512559008fda789051ee3846](https://github.com/JIESUN233/Legion/assets/109936863/a5c6dd95-02fb-48b5-9c53-7af8f2734346)
-
-This figure shows the system outputs including dataset statistics, training statistics and cache management outputs.
-
-![fe485222ae227d406bab1068eb1bed9](https://github.com/JIESUN233/Legion/assets/109936863/0c8476a8-81b7-4bbc-98a5-e926e9a80931)
-
-### Step 3. Run Legion training backend
-**After Legion outputs "System is ready for serving",** run the training backend by artifact-user.
-"legion_graphsage.py" and "legion_gcn.py" trains the GraphSAGE/GCN models, respectively.
-User can modify these parameters:
-#### Set dataset statistics
-For specific numbers, please refer to Table 3(dataset).
-```
-    argparser.add_argument('--class_num', type=int, default=47)
-    argparser.add_argument('--features_num', type=int, default=100)
-```
-#### Set GNN hyper-parameters
-    argparser.add_argument('--train_batch_size', type=int, default=8000)
-    argparser.add_argument('--hidden_dim', type=int, default=256)
-    argparser.add_argument('--hops_num', type=int, default=2)
-    argparser.add_argument('--nbrs_num', type=list, default=[25, 10])
-    argparser.add_argument('--drop_rate', type=float, default=0.5)
-    argparser.add_argument('--learning_rate', type=float, default=0.003)
-    argparser.add_argument('--epoch', type=int, default=10)
-Note that the train_batch_size, hops_num, nbrs_num, epoch should be the same as sampling hyper-parameters
-```
-3. $ cd pytorch-extension/ && python3 legion_graphsage.py
-```
-When training backend successfully runs, system outputs information including epoch time, validation accuracy, and testing accuracy.
-![30685d2d9a729ce84d52e8b72fcc1cb](https://github.com/JIESUN233/Legion/assets/109936863/dc93be15-6576-4dd5-ab70-477741b5df28)
-
-If SEGMENT-FAULT occurs or you kill Legion's processes, please remove semaphores in /dev/shm, for example:
-![14b24058fbcfe5bf0648f0d7082686a](https://github.com/JIESUN233/Legion/assets/109936863/c80f6453-6eda-4978-8655-3475cf045457)
-
-
-
+### Run Legion
+Similar to the way in using pre-installed Legion
 
 
