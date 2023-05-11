@@ -161,6 +161,8 @@ Note that the train_batch_size, hops_num, nbrs_num, epoch should be the same as 
 3. $ cd pytorch-extension/ && python3 legion_graphsage.py
 ```
 
+If SEGMENT FAULT occurs, please remove semaphores in /dev/shm.
+
 
 
 
