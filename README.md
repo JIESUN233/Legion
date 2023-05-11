@@ -17,11 +17,13 @@ Table 1
 Kc means the number of groups in which GPUs connect each other. And Kg means the number of GPUs in each group.
 
 ## Hardware We Can Support Now
-Unfortunately, the platforms above are currently unavailable. Alternatively, we offer a stable machine with fewer GPUs:
+Unfortunately, the platforms above are currently unavailable. Alternatively, we offer a stable machine with two GPUs:
 Table 2
 | Platform | CPU-Info | #sockets | #NUMA nodes | CPU Memory | PCIe | GPUs | NVLinks |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | Siton2 | 104*Intel(R) Xeon(R) Gold 5320 CPU @2.2GHZ | 2 | 2 | 500GB | PCIe 4.0x16, 2*PCIe switches, each connecting 4 GPUs | 2x40GB-A100 | NVLink Bridges, Kc = 1, Kg = 2 |
+
+Currently, there is only one GPU inside Siton2. We will add another GPU and NVLinks(in transit) to it as soon as possible.(2023.5.11)
 
 We will offer the way to access Siton2 in ATC artifacts submission. 
 
@@ -63,7 +65,7 @@ Table 3
 
 We store the pre-processed datasets in path of Siton2: /legion-dataset/. We also place the partitioning result for demos in Siton2 so that you needn't wait a lot of time for partitioning.
 
-## Using Pre-installed Legion
+## Use Pre-installed Legion
 There are four steps to train a GNN model in Legion. In these steps, you need to change into root user of Siton2.
 ### Step 1. Add environment variables temporarily
 ```
