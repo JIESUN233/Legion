@@ -7,6 +7,7 @@ Legion is a system for large-scale GNN training.
 
 ## Hardware in Our Paper:
 All platforms are bare-metal machines.
+Table 1
 | Platform | CPU-Info | #sockets | #NUMA nodes | CPU Memory | PCIe | GPUs | NVLinks |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | DGX-V100 | 96*Intel(R) Xeon(R) Platinum 8163 CPU @2.5GHZ | 2 | 1 | 384GB | PCIe 3.0x16, 4*PCIe switches, each connecting 2 GPUs | 8x16GB-V100 | NVLink Bridges, Kc = 2, Kg = 4 |
@@ -17,6 +18,7 @@ Kc means the number of groups in which GPUs connect each other. And Kg means the
 
 ## Hardware We Can Support Now:
 Unfortunately, the platforms above are currently unavailable. Alternatively, we offer a stable machine with fewer GPUs:
+Table 2
 | Platform | CPU-Info | #sockets | #NUMA nodes | CPU Memory | PCIe | GPUs | NVLinks |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | Siton2 | 104*Intel(R) Xeon(R) Gold 5320 CPU @2.2GHZ | 2 | 2 | 500GB | PCIe 4.0x16, 2*PCIe switches, each connecting 4 GPUs | 2x40GB-A100 | NVLink Bridges, Kc = 1, Kg = 2 |
@@ -47,6 +49,7 @@ $ pip3 install dgl
 8. MPI
 
 ## Dataset: 
+Table 3
 | Datasets | PR | PA | CO | UKS | UKL | CL |
 | --- | --- | --- | --- | --- | --- | --- |
 | #Vertices | 2.4M | 111M | 65M | 133M | 0.79B | 1B |
@@ -54,6 +57,7 @@ $ pip3 install dgl
 | Feature Size | 100 | 128 | 256 | 256 | 128 | 128 |
 | Topology Storage | 640MB | 6.4GB | 7.2GB | 22GB | 189GB | 170GB |
 | Feature Storage | 960MB | 56GB | 65GB | 136GB | 400GB | 512GB |
+| Class Number | 47 | 20 | 20 | 20 | 20 | 20 |
 
 We store the pre-processed datasets in path of Siton2: /legion-dataset/. We also place the partitioning result for demos in Siton2 so that you needn't wait a lot of time for partitioning.
 
@@ -105,19 +109,50 @@ There are three steps to train a GNN model in Legion:
 
 Open msr by root for PCM:
 ```
-modprobe msr
+$ modprobe msr
 ```
 
 Running the sampling server of Legion by root. In Siton2, we support two mode: NVLink, no NVLink.
+User can modify these parameters:
+### Choose dataset
+    argparser.add_argument('--dataset_path', type=str, default="/home/atc-artifacts-user/datasets")
+    argparser.add_argument('--dataset', type=str, default="PR")
+You can change "PR" into "PA", "CO", "UKS", "UKL", "CL".
+### Set sampling hyper-parameters
+    argparser.add_argument('--train_batch_size', type=int, default=8000)
+    argparser.add_argument('--hops_num', type=int, default=2)
+    argparser.add_argument('--nbrs_num', type=list, default=[25, 10])
+    argparser.add_argument('--epoch', type=int, default=10)
+### Set GPU number, GPU meory limitation and NVLink usage
+    argparser.add_argument('--gpu_number', type=int, default=1)
+    argparser.add_argument('--cache_memory', type=int, default=200000000)
+    argparser.add_argument('--usenvlink', type=bool, default=True)
+
 ```
 1. $ cd legion-atc-artifacts/ && python3 legion_server.py
 ```
 After Legion outputs "System is ready for serving", run the training backend by artifact-user.
-
 "legion_graphsage.py" and "legion_gcn.py" trains the GraphSAGE/GCN models, respectively.
+User can modify these parameters:
+### Set dataset statistics
+For specific numbers, please refer to Table 3(dataset).
+    argparser.add_argument('--class_num', type=int, default=47)
+    argparser.add_argument('--features_num', type=int, default=100)
+### Set GNN hyper-parameters
+    argparser.add_argument('--train_batch_size', type=int, default=8000)
+    argparser.add_argument('--hidden_dim', type=int, default=256)
+    argparser.add_argument('--hops_num', type=int, default=2)
+    argparser.add_argument('--nbrs_num', type=list, default=[25, 10])
+    argparser.add_argument('--drop_rate', type=float, default=0.5)
+    argparser.add_argument('--learning_rate', type=float, default=0.003)
+    argparser.add_argument('--epoch', type=int, default=10)
+
+Note that the train_batch_size, hops_num, nbrs_num, epoch should be the same as sampling hyper-parameters
+
 ```
 2. $ cd pytorch-extension/ && python3 legion_graphsage.py
 ```
+
 For more parameter settings, please refer to legion-atc-artifacts/pytorch_extension/README.md
 
 
