@@ -172,11 +172,11 @@ This will just make libxtrapulp.a static library for use with xtrapulp.h
 ```
 #### Secondly, build Legion's training backend
 ```
-4. $ cd legion-atc-artifacts/pytorch_extension/
+3. $ cd legion-atc-artifacts/pytorch_extension/
 ```
 Change into root user and execute:
 ```
-5. $ python3 setup.py install
+4. $ python3 setup.py install
 ```
 
 ### Run Legion
