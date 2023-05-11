@@ -73,6 +73,7 @@ There are four steps to train a GNN model in Legion. In these steps, you need to
 ```
 2. $ modprobe msr
 ```
+After these two steps, you need prepare two sessions to run Legion's sampling server and training backend separately.
 ### Step 3. Run Legion sampling server
 In Siton2, we can test Legion in two mode: NVLink, no NVLink.
 User can modify these parameters:
