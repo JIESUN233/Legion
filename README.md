@@ -131,9 +131,11 @@ You can change "PR" into "PA", "CO", "UKS", "UKL", "CL".
 2. $ cd legion-atc-artifacts/ && python3 legion_server.py
 ```
 This figure shows that PCM is working.
+
 ![1683783095308](https://github.com/JIESUN233/Legion/assets/109936863/e285eb4b-cc7c-4240-b58d-3084b74fbde2)
 
 This figure shows the system outputs including dataset statistics, training statistics and cache management outputs.
+
 ![image](https://github.com/JIESUN233/Legion/assets/109936863/fbbcf62a-0392-4bb7-8dc0-84b130e806ed)
 
 ### Step 3. Run Legion training backend
