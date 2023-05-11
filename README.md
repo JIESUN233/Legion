@@ -57,7 +57,7 @@ Table 3
 | Feature Size | 100 | 128 | 256 | 256 | 128 | 128 |
 | Topology Storage | 640MB | 6.4GB | 7.2GB | 22GB | 189GB | 170GB |
 | Feature Storage | 960MB | 56GB | 65GB | 136GB | 400GB | 512GB |
-| Class Number | 47 | 20 | 20 | 20 | 20 | 20 |
+| Class Number | 47 | 2 | 2 | 2 | 2 | 2 |
 
 We store the pre-processed datasets in path of Siton2: /legion-dataset/. We also place the partitioning result for demos in Siton2 so that you needn't wait a lot of time for partitioning.
 
