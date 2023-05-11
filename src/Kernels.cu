@@ -192,9 +192,6 @@ void batch_generator_kernel(
 
 	int32_t total_node_num = noder->TotalNodeNum();
 
-	int32_t k_batch = cache->K_Batch();
-	int32_t* all_future_ids = cache->FutureBatch(dev_id);
-
 	int32_t* batch_ids = memorypool->GetSampledIds();
 	int32_t* labels = memorypool->GetLabels();
 	uint32_t* accessed_map = memorypool->GetAccessedMap();
@@ -229,10 +226,7 @@ void batch_generator_kernel(
 	dim3 bg_thread(1024, 1);
 	batch_generator<<<bg_block, bg_thread, 0, (strm_hdl)>>>(batch_ids, labels, size, counter, all_ids, all_labels, total_cap, position_map, accessed_map);
 	cudaCheckError();
-	// if(mode == TRAINMODE){
-	// 	future_batch_generator<<<bg_block, bg_thread, 0, (strm_hdl)>>>(all_future_ids, batch_size, k_batch, counter, total_cap, all_ids);
-	// 	cudaCheckError();
-	// }
+
 	update_counter<<<1, 1, 0, (strm_hdl)>>>(node_counter, edge_counter, 0, size);
 	cudaCheckError();
 }
@@ -625,7 +619,7 @@ void GPU_Random_Sampling(
 			input_ids = agg_src_ids + h_edge_counter[2];
 			batch_size = h_node_counter[2];
 		}
-		graph -> Find(input_ids, tmp_partition_index, tmp_parition_offset, batch_size, dev_id, op_id, strm_hdl);
+		cache -> FindTopo(input_ids, tmp_partition_index, tmp_parition_offset, batch_size, op_id, strm_hdl, dev_id);
 		cudaCheckError();
 		free(h_node_counter);
 		free(h_edge_counter);
@@ -692,7 +686,7 @@ __global__ void zero_copy_with_aggregated_cache(
 	if(float_attr_len > 0){
 		for(int64_t thread_idx = threadIdx.x + blockDim.x * blockIdx.x; thread_idx < (int64_t(batch_size) * float_attr_len); thread_idx += blockDim.x * gridDim.x){
 			gidx = (cache_index[thread_idx / float_attr_len]);
-			didx = gidx / cache_capacity;
+			didx = gidx / cache_capacity;//device idx in clique
 			fidx = gidx % cache_capacity;
 			foffset = thread_idx % float_attr_len;
 			if(gidx < 0){/*cache miss*/
@@ -708,25 +702,6 @@ __global__ void zero_copy_with_aggregated_cache(
 }
 
 
-__global__ void zero_copy_without_cache(
-	float* cpu_float_attrs, int32_t float_attr_len,
-	int32_t* sampled_ids, float* dst_float_buffer,
-	int32_t batch_size, int32_t node_off,
-	int32_t total_num_nodes,
-	int32_t op_id)
-{
-	int32_t fidx;
-	int32_t foffset;
-	for(int64_t thread_idx = threadIdx.x + blockDim.x * blockIdx.x; thread_idx < (int64_t(batch_size) * float_attr_len); thread_idx += gridDim.x * blockDim.x){
-		foffset = thread_idx % float_attr_len;
-        fidx = sampled_ids[node_off + (thread_idx / float_attr_len)];
-        int64_t dst_offset = ((int64_t(node_off) * float_attr_len)) + thread_idx;
-        int64_t src_offset = (int64_t(fidx%total_num_nodes) * float_attr_len) + foffset;
-        if(fidx >= 0){
-            dst_float_buffer[dst_offset] = cpu_float_attrs[src_offset];
-        }
-	}
-}
 
 // extern "C"
 void get_feature_kernel(
@@ -745,67 +720,29 @@ void get_feature_kernel(
 		std::cout<<"error feature len\n";
 	}
 
-	int32_t cache_capacity = cache->Capacity(); 
+	int32_t cache_capacity = cache->NodeCapacity(dev_id); 
 	int32_t* cache_index = memorypool->GetCacheSearchBuffer();
 	int32_t* sampled_ids = memorypool->GetSampledIds();
 	int32_t* node_counter = memorypool->GetNodeCounter();
 	float* dst_float_buffer = memorypool->GetFloatFeatures();
 
-	cache->Find(sampled_ids, cache_index, node_counter, op_id, strm_hdl, dev_id);
+	cache->FindFeat(sampled_ids, cache_index, node_counter, op_id, strm_hdl, dev_id);
 	cudaCheckError();
 
 	float** cache_float_attrs = nullptr;
 	cache_float_attrs = cache->Global_Float_Feature_Cache(dev_id);
 
+	dim3 block_num(58, 1);
+	dim3 thread_num(1024, 1);
 	if(in_memory){
 		float* cpu_float_attrs = noder->GetAllFloatAttr();
-        int* h_node_counter = (int*)malloc(64);
-        cudaMemcpy(h_node_counter, node_counter, 64, cudaMemcpyDeviceToHost);
-        int32_t batch_size = 0;
-        int32_t node_off = 0;
-        if(op_id == 1){
-            node_off = h_node_counter[3];
-            batch_size = h_node_counter[4];
-        }else if(op_id == 3){
-            node_off = h_node_counter[5];
-            batch_size = h_node_counter[6];
-        }else if(op_id == 5){
-            node_off = h_node_counter[7];
-            batch_size = h_node_counter[8];
-        }
-
-		// dim3 block_num((batch_size * float_attr_len - 1) / 1024 + 1, 1);
-        // dim3 thread_num(1024, 1);
-		dim3 block_num(58, 1);
-        dim3 thread_num(1024, 1);
-
-        zero_copy_without_cache<<<block_num, thread_num, 0, (strm_hdl)>>>(
-			cpu_float_attrs, float_attr_len,
-			sampled_ids, dst_float_buffer,
-			batch_size, node_off, 
-			total_num_nodes,
-			op_id
-		);
-
-		// dim3 block_num(58, 1);
-		// dim3 thread_num(1024, 1);
-		// zero_copy_with_aggregated_cache<<<block_num, thread_num, 0, (strm_hdl)>>>(
-		// 	cpu_float_attrs, cache_float_attrs, float_attr_len,
-		// 	sampled_ids, cache_index, cache_capacity,
-		// 	node_counter, dst_float_buffer,
-		// 	total_num_nodes,
-		// 	dev_id, op_id
-		// );
-
-
-	}else{
-
-		noder->GetBamFloatAttr(cache_float_attrs, float_attr_len,
+		zero_copy_with_aggregated_cache<<<block_num, thread_num, 0, (strm_hdl)>>>(
+			cpu_float_attrs, cache_float_attrs, float_attr_len,
 			sampled_ids, cache_index, cache_capacity,
 			node_counter, dst_float_buffer,
 			total_num_nodes,
-			dev_id, op_id, strm_hdl);
-
+			dev_id, op_id
+		);
 	}
 	cudaCheckError();
 }	
@@ -841,7 +778,7 @@ void make_update_plan(
 		dim3 block_num(48, 1);
 		dim3 thread_num(1024, 1);
 		ClearPosMap<<<block_num, thread_num, 0, strm_hdl>>>(position_map, sampled_ids, node_counter);
-		cache -> MakePlan(sampled_ids, agg_src_id, agg_dst_id, agg_src_off, agg_dst_off, node_counter, edge_counter, strm_hdl, dev_id);
+		cache -> CacheProfiling(sampled_ids, agg_src_id, agg_dst_id, agg_src_off, agg_dst_off, node_counter, edge_counter, strm_hdl, dev_id);
 	}
 }
 

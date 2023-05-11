@@ -64,7 +64,7 @@ public:
   }
   
   void Coordinate(BuildInfo* info) override {
-    std::cout<<"Start Coordinate Data Parallel Params\n";
+    // std::cout<<"Start Coordinate Data Parallel Params\n";
     int32_t partition_count = info->partition_count;
     epoch_ = info->epoch;
     raw_batch_size_ = info->raw_batch_size;
@@ -87,7 +87,7 @@ public:
 
     train_step_ = (min_train_size - 1) / raw_batch_size_;
 
-    std::cout<<info->training_set_num[0]<<" "<<min_train_size<<" "<<train_step_<<" "<<raw_batch_size_<<"\n";
+    // std::cout<<info->training_set_num[0]<<" "<<min_train_size<<" "<<train_step_<<" "<<raw_batch_size_<<"\n";
 
     for(int32_t i = 0; i < partition_count; i++){
       // train_batch_size_.push_back(((info->training_set_num[i] - 1)/train_step_ + 1));
@@ -123,9 +123,9 @@ public:
     std::cout<<"Train Steps: "<<train_step_<<"\n";
     std::cout<<"Valid Steps: "<<valid_step_<<"\n";
     std::cout<<"Test Steps: "<<test_step_<<"\n";
-    for(int i = 0; i < partition_count; i++){
-      std::cout<<"Train Bs "<<train_batch_size_[i]<<" Valid Bs "<<valid_batch_size_[i]<<" Test Bs "<<test_batch_size_[i]<<"\n"; 
-    }
+    // for(int i = 0; i < partition_count; i++){
+    //   std::cout<<"Train Bs "<<train_batch_size_[i]<<" Valid Bs "<<valid_batch_size_[i]<<" Test Bs "<<test_batch_size_[i]<<"\n"; 
+    // }
 
     shm_->steps[0] = train_step_;
     shm_->steps[1] = valid_step_;

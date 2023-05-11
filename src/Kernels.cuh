@@ -64,7 +64,7 @@ void GPU_Random_Sampling(
   int32_t op_id,
   bool is_presc);
 
-// extern "C"
+extern "C"
 void get_feature_kernel(
   cudaStream_t strm_hdl,
   GPUCache* cache, 

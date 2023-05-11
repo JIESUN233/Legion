@@ -48,6 +48,7 @@ private:
   int32_t central_device_;
   std::vector<int> shard_to_device_;
   std::vector<int> shard_to_partition_;
+  int32_t partition_;
 
   int64_t cache_edge_num_;
   int64_t edge_num_;
@@ -59,9 +60,7 @@ private:
 
   int32_t float_attr_len_;
 
-  int32_t cache_cap_;
-  int32_t cache_way_;
-  int32_t future_batch_;
+  int64_t cache_memory_;
 
   std::string dataset_path_;
   int32_t raw_batch_size_;

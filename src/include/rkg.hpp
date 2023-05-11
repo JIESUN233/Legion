@@ -15,7 +15,7 @@
  */
 
 #pragma once
-#include <filesystem>
+#include <experimental/filesystem>
 #include <fstream>
 #include <random>
 #include <string>
@@ -40,8 +40,8 @@ void generate_uniform_unique_pairs(std::vector<key_type>& keys,
   std::string dataset_name = std::to_string(num_keys) + "_" + std::to_string(seed);
   std::string dataset_path = dataset_dir + "/" + dataset_name;
   if (cache) {
-    if (std::filesystem::exists(dataset_dir)) {
-      if (std::filesystem::exists(dataset_path)) {
+    if (std::experimental::filesystem::exists(dataset_dir)) {
+      if (std::experimental::filesystem::exists(dataset_path)) {
         std::cout << "Reading cached keys.." << std::endl;
         std::ifstream dataset(dataset_path, std::ios::binary);
         dataset.read((char*)keys.data(), sizeof(key_type) * num_keys);
@@ -50,7 +50,7 @@ void generate_uniform_unique_pairs(std::vector<key_type>& keys,
         return;
       }
     } else {
-      std::filesystem::create_directory(dataset_dir);
+      std::experimental::filesystem::create_directory(dataset_dir);
     }
   }
   std::random_device rd;

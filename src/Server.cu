@@ -42,11 +42,11 @@ void RunnerLoop(int max_step, Runner* runner, RunnerParams* params){
 
 class GPUServer : public Server {
 public:
-    void Initialize(int global_shard_count, bool in_memory) {
+    void Initialize(int global_shard_count) {
         shard_count_ = global_shard_count;
         std::cout<<"CUDA Device Count: "<<shard_count_<<"\n";
-        // monitor_ = new PCM_Monitor();
-        // monitor_->Init();
+        monitor_ = new PCM_Monitor();
+        monitor_->Init();
         
         GPUGraphStore* gpu_graph_store = new GPUGraphStore();
         gpu_graph_store->Initialze(shard_count_);
@@ -72,7 +72,7 @@ public:
             new_params->noder = (void*)gpu_node_storage_ptr_;
             new_params->env = (void*)gpu_ipc_env_;
             new_params->global_batch_id = 0;
-            new_params->in_memory = in_memory;
+            new_params->in_memory = 1;
             params_[i] = new_params;
             Runner* new_runner = NewGPURunner();
             runners_[i] = new_runner;
@@ -81,7 +81,8 @@ public:
     }
 
     void PreSc(int cache_agg_mode) {
-        // monitor_->Start();
+        monitor_->Start();
+        std::chrono::steady_clock::time_point t1 = std::chrono::steady_clock::now();
 
         for(int i = 0; i < shard_count_; i++){
             Runner* runner = runners_[i];
@@ -93,19 +94,28 @@ public:
             th.join();
         }
 
-        // monitor_->Stop();
+
+        monitor_->Stop();
         // monitor_->Print();
-        std::vector<uint64_t> counters;// = monitor_->GetCounter();
+        std::vector<uint64_t> counters =  monitor_->GetCounter();
         // std::cout<<counters[0]<<" "<<counters[1]<<"\n";
         // gpu_cache_ptr_->Coordinate(cache_agg_mode, gpu_node_storage_ptr_, gpu_graph_storage_ptr_);
-        gpu_cache_ptr_->Coordinate(cache_agg_mode, gpu_node_storage_ptr_, gpu_graph_storage_ptr_, counters, train_step_);
+        double t = std::chrono::duration_cast<std::chrono::duration<double>>(std::chrono::steady_clock::now() - t1).count();
+        // monitor_->Stop();
+        // std::vector<uint64_t> counters = monitor_->GetCounter();
+        // std::cout<<counters[0]<<" "<<counters[1]<<"\n";
+        gpu_cache_ptr_->CandidateSelection(cache_agg_mode, gpu_node_storage_ptr_, gpu_graph_storage_ptr_);
+        gpu_cache_ptr_->CostModel(cache_agg_mode, gpu_node_storage_ptr_, gpu_graph_storage_ptr_, counters, train_step_);
+        gpu_cache_ptr_->FillUp(cache_agg_mode, gpu_node_storage_ptr_, gpu_graph_storage_ptr_);
+
+        std::cout<<"First epoch cost: "<<t<<" s\n";
 
         std::cout<<"System is ready for serving\n";
     }
 
     void Run() {
         // monitor_->Start();
-        std::chrono::steady_clock::time_point t1 = std::chrono::steady_clock::now();
+        // std::chrono::steady_clock::time_point t1 = std::chrono::steady_clock::now();
         for(int i = 0; i < shard_count_; i++){
             Runner* runner = runners_[i];
             RunnerParams* params = params_[i];
@@ -115,11 +125,11 @@ public:
         for(auto &th : train_thread_pool_){
             th.join();
         }
-        double t = std::chrono::duration_cast<std::chrono::duration<double>>(std::chrono::steady_clock::now() - t1).count();
+        // double t = std::chrono::duration_cast<std::chrono::duration<double>>(std::chrono::steady_clock::now() - t1).count();
         // monitor_->Stop();
         // std::vector<uint64_t> counters = monitor_->GetCounter();
         // std::cout<<counters[0]<<" "<<counters[1]<<"\n";
-        std::cout<<"sampling cost: "<<t<<" s\n";
+        // std::cout<<"sampling cost: "<<t<<" s\n";
     }
 
     void Finalize() {
@@ -138,7 +148,7 @@ private:
     GPUNodeStorage* gpu_node_storage_ptr_;
     GPUCache* gpu_cache_ptr_;
     IPCEnv* gpu_ipc_env_;
-    // PCM_Monitor* monitor_;
+    PCM_Monitor* monitor_;
 
     int shard_count_;
     int train_step_;
@@ -197,12 +207,12 @@ public:
         op_factory_[op_num_ - 1] = NewCacheUpdater(op_num_ - 1);
 
         /*buffer allocation*/
-        cache_capacity_ = cache->Capacity();
+        // cache_capacity_ = cache->Capacity();
         int pipeline_depth = PIPELINE_DEPTH;
         pipeline_depth_ = pipeline_depth;
 
         int total_num_nodes = noder->TotalNodeNum();
-        cache->InitializeCacheController(local_dev_id_, cache_capacity_, num_ids_, total_num_nodes, batch_size);/*control cache memory by current actor*/
+        cache->InitializeCacheController(local_dev_id_, total_num_nodes);/*control cache memory by current actor*/
 
         memorypool_ = new GPUMemoryPool(pipeline_depth);
         int32_t* cache_search_buffer = (int32_t*)d_alloc_space(num_ids_ * sizeof(int32_t));
@@ -264,7 +274,7 @@ public:
         GPUCache* cache = (GPUCache*)(params->cache);
         int32_t num_ids = int32_t((cache->MaxIdNum(local_dev_id_)) * 1.2);
         IPCEnv* env = (IPCEnv*)(params->env);
-        std::cout<<"numids "<<num_ids<<" "<<local_dev_id_<<"\n";
+        // std::cout<<"numids "<<num_ids<<" "<<local_dev_id_<<"\n";
         env->InitializeFeaturesBuffer(0, num_ids, float_attr_len_, local_dev_id_, pipeline_depth_);
         for(int i = 0; i < pipeline_depth_; i++){
           memorypool_->SetFloatFeatures(env->GetFloatFeatures(local_dev_id_, i), i);
@@ -295,7 +305,7 @@ public:
         mode_ = env->GetCurrentMode(batch_id);
         memorypool_->SetCurrentMode(mode_);
         memorypool_->SetIter(env->GetLocalBatchId(batch_id));
-        env->IPCWait(local_dev_id_, current_pipe_);
+        //env->IPCWait(local_dev_id_, current_pipe_);
         
         for(int i = 0; i < op_num_; i++){
             if(i % 2 == 1){
@@ -312,14 +322,14 @@ public:
             }
         }
 
-        env->IPCPost(local_dev_id_, current_pipe_);
+        //env->IPCPost(local_dev_id_, current_pipe_);
         current_pipe_ = (current_pipe_ + 1) % pipeline_depth_;
         memorypool_ -> SetCurrentPipe(current_pipe_);
     }
 
     void Finalize(RunnerParams* params) override {
         IPCEnv* env = (IPCEnv*)(params->env);
-        env->IPCWait(local_dev_id_, (current_pipe_ + 1) % pipeline_depth_);
+        //env->IPCWait(local_dev_id_, (current_pipe_ + 1) % pipeline_depth_);
         cudaSetDevice(local_dev_id_);
         memorypool_->Finalize();
     }
@@ -334,7 +344,7 @@ private:
     GPUMemoryPool* memorypool_;
 
     /*dynamic cache config*/
-    int32_t cache_capacity_;
+    // int32_t cache_capacity_;
 
     /*pipeline*/
     int current_pipe_;

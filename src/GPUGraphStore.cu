@@ -47,12 +47,12 @@ void mmap_trainingset_read(std::string &training_file, std::vector<int32_t>& tra
     return;
 }
 
-void mmap_partition_read(std::string &partition_file, int32_t* partition_index){
+int32_t mmap_partition_read(std::string &partition_file, int32_t* partition_index){
     int64_t part_idx = 0;
     int32_t fd = open(partition_file.c_str(), O_RDONLY);
-    if(fd == -1){
-        std::cout<<"cannout open file: "<<partition_file<<"\n";
-    }
+    // if(fd == -1){
+    //     std::cout<<"cannout open file: "<<partition_file<<"\n";
+    // }
     int64_t buf_len = lseek(fd, 0, SEEK_END);
     const int32_t* buf = (int32_t *)mmap(NULL, buf_len, PROT_READ, MAP_PRIVATE, fd, 0);
     const int32_t* buf_end = buf + buf_len/sizeof(int32_t);
@@ -63,7 +63,7 @@ void mmap_partition_read(std::string &partition_file, int32_t* partition_index){
         buf++;
     }
     close(fd);
-    return;
+    return fd;
 }
 
 void mmap_indptr_read(std::string &indptr_file, int64_t* indptr){
@@ -206,8 +206,6 @@ void GPUGraphStore::ReadMetaFIle(BuildInfo* info){
     std::cout<<"Graph nodes num:    "<<node_num_<<"\n";
     iss >> edge_num_;
     std::cout<<"Graph edges num:    "<<edge_num_<<"\n";
-    iss >> cache_edge_num_;
-    std::cout<<"Cache edges num:    "<<cache_edge_num_<<"\n";
     iss >> float_attr_len_;
     std::cout<<"Feature dim:        "<<float_attr_len_<<"\n";
     iss >> training_set_num_;
@@ -216,22 +214,13 @@ void GPUGraphStore::ReadMetaFIle(BuildInfo* info){
     std::cout<<"Validation set num: "<<validation_set_num_<<"\n";
     iss >> testing_set_num_;
     std::cout<<"Testing set num:    "<<testing_set_num_<<"\n";
-    iss >> cache_cap_;
-    std::cout<<"Cache capacity:     "<<cache_cap_<<"\n";
-    iss >> cache_way_;
-    std::cout<<"Cache way num:      "<<cache_way_<<"\n"; 
-    iss >> future_batch_;
-    std::cout<<"Predict by K batch: "<<future_batch_<<"\n"; 
+    iss >> cache_memory_;
+    std::cout<<"Cache memory:       "<<cache_memory_<<"\n";
     iss >> epoch_;
     std::cout<<"Train epoch:        "<<epoch_<<"\n";
-    int numPages;
-    iss >> numPages;
-    std::cout<<"Num of pages:       "<<numPages<<"\n";
-    int pageSize;
-    iss >> pageSize;
-    std::cout<<"Page size:          "<<pageSize<<"\n";
-
     info->epoch = epoch_;
+    iss >> partition_;
+    std::cout<<"Partition?:         "<<partition_<<"\n";
 
     info->cudaDevice = 0;
     info->cudaDeviceId = 0;
@@ -243,7 +232,7 @@ void GPUGraphStore::ReadMetaFIle(BuildInfo* info){
     info->nvmNamespace = 1;
     info->doubleBuffered = false;
     info->numReqs = 1;
-    info->numPages = numPages;
+    info->numPages = 64;
     info->startBlock = 0;
     info->stats = false;
     info->output = nullptr;
@@ -253,9 +242,9 @@ void GPUGraphStore::ReadMetaFIle(BuildInfo* info){
     info->bus = 0;
     info->devfn = 0;
     info->n_ctrls = 12;
-    info->queueDepth = 1024;
-    info->numQueues = 256;
-    info->pageSize = pageSize;
+    info->queueDepth = 16;
+    info->numQueues = 1;
+    info->pageSize = 4096;
     info->numElems = int64_t(node_num_) * float_attr_len_;
     info->random = true;
     info->ssdtype = 0;
@@ -330,9 +319,9 @@ void GPUGraphStore::Load_Feature(BuildInfo* info){
     mmap_trainingset_read(training_path, training_ids);
     mmap_trainingset_read(validation_path, validation_ids);
     mmap_trainingset_read(testing_path, testing_ids);
-    // mmap_features_read(features_path, host_float_attrs);
-    // mmap_labels_read(labels_path, all_labels);
-    mmap_partition_read(partition_path, partition_index);
+    mmap_features_read(features_path, host_float_attrs);
+    mmap_labels_read(labels_path, all_labels);
+    int32_t fdret = mmap_partition_read(partition_path, partition_index);
 
     std::cout<<"Finish Reading All Files\n";
     // partition nodes
@@ -342,8 +331,12 @@ void GPUGraphStore::Load_Feature(BuildInfo* info){
     std::cout<<"partition count "<<partition_count<<"\n";
     for(int32_t i = 0; i < training_set_num_; i+=1){
         int32_t tid = training_ids[i];
-        int32_t part_id = tid % partition_count;
-        // int32_t part_id = partition_index[tid];
+        int32_t part_id;
+        if(fdret >= 0 && partition_ == 1){
+            part_id = partition_index[tid];
+        }else{
+            part_id = tid % partition_count;
+        }
         // part_id = (part_id / 2) * 2 + (tid % 2);
         if(part_id < partition_count){
             (info->training_set_ids[part_id]).push_back(tid);
@@ -351,22 +344,6 @@ void GPUGraphStore::Load_Feature(BuildInfo* info){
             // (info->training_set_ids[part_id]).push_back(training_ids[i + 1]);
             // (info->training_set_ids[part_id]).push_back(training_ids[i + 2]);
         }
-        // if(part_id == 5){
-        //     part_id = 7;
-        // }else if(part_id == 7){
-        //     part_id = 5;
-        // }else if(part_id == 1){
-        //     part_id = 3;
-        // }else if(part_id == 3){
-        //     part_id = 1;
-        // }else if(part_id == 0){
-        //     part_id = 4;
-        // }else if(part_id == 4){
-        //     part_id = 0;
-        // }
-        // part_id = (part_id / 4) * 4 + (tid % 4);
-        // 
-
 
         // if(part_id < partition_count / 2){
         //     part_id = tid % (partition_count / 2);
@@ -374,11 +351,8 @@ void GPUGraphStore::Load_Feature(BuildInfo* info){
         //     part_id = (partition_count / 2) + (tid % (partition_count / 2));
         // }
 
-
-
-
     }
-    std::cout<<"training set count "<<trainingset_count<<"\n";
+    // std::cout<<"training set count "<<trainingset_count<<"\n";
 
     for(int32_t i = 0; i < validation_set_num_; i++){
         int32_t tid = validation_ids[i];
@@ -414,7 +388,7 @@ void GPUGraphStore::Load_Feature(BuildInfo* info){
     //partition labels
     for(int32_t part_id = 0; part_id < partition_count; part_id++){
         for(int32_t i = 0; i < info->training_set_ids[part_id].size(); i++){
-            int32_t ts_label = 0;//all_labels[info->training_set_ids[part_id][i]];
+            int32_t ts_label = all_labels[info->training_set_ids[part_id][i]];
             info->training_labels[part_id].push_back(ts_label);
         }
         // info->training_labels[part_id].resize(info->training_set_ids[part_id].size());
@@ -423,7 +397,7 @@ void GPUGraphStore::Load_Feature(BuildInfo* info){
     std::cout<<info->training_set_num[0]<<" "<<info->training_set_ids[0].size()<<"\n";
     for(int32_t part_id = 0; part_id < partition_count; part_id++){
         for(int32_t i = 0; i < info->validation_set_ids[part_id].size(); i++){
-            int32_t ts_label = 0;//all_labels[info->validation_set_ids[part_id][i]];
+            int32_t ts_label = all_labels[info->validation_set_ids[part_id][i]];
             info->validation_labels[part_id].push_back(ts_label);
         }
         // info->validation_labels[part_id].resize(info->validation_set_ids[part_id].size());
@@ -432,7 +406,7 @@ void GPUGraphStore::Load_Feature(BuildInfo* info){
 
     for(int32_t part_id = 0; part_id < partition_count; part_id++){
         for(int32_t i = 0; i < info->testing_set_ids[part_id].size(); i++){
-            int32_t ts_label = 0;//all_labels[info->testing_set_ids[part_id][i]];
+            int32_t ts_label = all_labels[info->testing_set_ids[part_id][i]];
             info->testing_labels[part_id].push_back(ts_label);
         }
         // info->testing_labels.resize(info->testing_set_ids[part_id].size());
@@ -489,7 +463,7 @@ void GPUGraphStore::Initialze(int32_t shard_count){
     int32_t train_step = env_->GetTrainStep();
 
     cudaSetDevice(0);
-    cache_ -> Initialize(device, cache_cap_, 0, float_attr_len_, future_batch_, cache_way_, train_step);
+    cache_ -> Initialize(cache_memory_, 0, float_attr_len_, train_step, shard_count);
     cudaSetDevice(0);
     std::cout<<"Storage Initialized\n";
 }

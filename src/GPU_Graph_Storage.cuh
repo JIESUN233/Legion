@@ -5,11 +5,6 @@
 #include <vector>
 #include "BuildInfo.h"
 
-#include <thrust/random/uniform_int_distribution.h>
-#include <thrust/random/linear_congruential_engine.h>
-// #include <thrust/sort.h>
-// #include <thrust/execution_policy.h>
-#include "hashmap.h"
 // Macro for checking cuda errors following a cuda launch or api call
 #define cudaCheckError()                                       \
   {                                                            \
@@ -27,7 +22,7 @@ public:
     virtual ~GPUGraphStorage() = default;
     //build
     virtual void Build(BuildInfo* info) = 0;
-    virtual void GraphCache(std::vector<unsigned long long int*> &access_time, int32_t device_count) = 0;
+    virtual void GraphCache(int32_t* QT, int32_t Ki, int32_t Kg, int32_t capacity) = 0;
     virtual void Finalize() = 0;
     //CSR
     virtual int32_t GetPartitionCount() const = 0;
@@ -39,7 +34,6 @@ public:
     virtual int64_t Dst_Size(int32_t part_id) const = 0;
     virtual char* PartitionIndex(int32_t dev_id) const = 0;
     virtual int32_t* PartitionOffset(int32_t dev_id) const = 0;
-    virtual void Find(int32_t* input_ids, char* partition_index, int32_t* partition_offset, int32_t batch_size, int32_t device_id, int32_t op_id, cudaStream_t strm_hdl) = 0;
 };
 extern "C" 
 GPUGraphStorage* NewGPUMemoryGraphStorage();
