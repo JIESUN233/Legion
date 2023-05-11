@@ -101,13 +101,18 @@ This will just make libxtrapulp.a static library for use with xtrapulp.h
 ```
 
 ## Run Legion
-There are two steps to train a GNN model in Legion:
+There are three steps to train a GNN model in Legion:
 
-Running the sampling server of Legion. In Siton2, we support two mode: NVLink, no NVLink.
+Open msr by root for PCM:
+```
+modprobe msr
+```
+
+Running the sampling server of Legion by root. In Siton2, we support two mode: NVLink, no NVLink.
 ```
 1. $ cd legion-atc-artifacts/ && python3 legion_server.py
 ```
-After Legion outputs "System is ready for serving", run the training backend.
+After Legion outputs "System is ready for serving", run the training backend by artifact-user.
 
 "legion_graphsage.py" and "legion_gcn.py" trains the GraphSAGE/GCN models, respectively.
 ```
