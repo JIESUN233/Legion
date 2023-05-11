@@ -63,7 +63,7 @@ Table 3
 | Feature Storage | 960MB | 56GB | 65GB | 136GB | 400GB | 512GB |
 | Class Number | 47 | 2 | 2 | 2 | 2 | 2 |
 
-We store the pre-processed datasets in path of Siton2: /legion-dataset/. We also place the partitioning result for demos in Siton2 so that you needn't wait a lot of time for partitioning.
+We store the pre-processed datasets in path of Siton2: /home/atc-artifacts-user/datasets. We also place the partitioning result for demos in Siton2 so that you needn't wait a lot of time for partitioning.
 
 ## Use Pre-installed Legion
 There are four steps to train a GNN model in Legion. In these steps, you need to change into root user of Siton2.
