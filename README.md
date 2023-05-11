@@ -63,7 +63,7 @@ We store the pre-processed datasets in path of Siton2: /legion-dataset/. We also
 
 ## Build Legion from Source.
 ```
-$ git clone https://github.com/RC4ML/legion.git
+$ git clone https://github.com/JIESUN233/Legion.git
 ```
 
 ### Prepare Graph Partitioning Tool: XtraPulp
@@ -80,7 +80,7 @@ To make:
 
 Then make xtrapulp executable and library
 ```
-2. $cd xtrapulp/ && make 
+2. $ cd xtrapulp/ && make 
 ```
 This will just make libxtrapulp.a static library for use with xtrapulp.h
 ```
@@ -131,10 +131,10 @@ You can change "PR" into "PA", "CO", "UKS", "UKL", "CL".
 2. $ cd legion-atc-artifacts/ && python3 legion_server.py
 ```
 This figure shows that PCM is working.
-![1683782119921](https://github.com/JIESUN233/Legion/assets/109936863/a8345deb-b0f4-486d-8075-d6c978b9e43c)
+![1683783095308](https://github.com/JIESUN233/Legion/assets/109936863/e285eb4b-cc7c-4240-b58d-3084b74fbde2)
 
 This figure shows the system outputs including dataset statistics, training statistics and cache management outputs.
-![1683782151206](https://github.com/JIESUN233/Legion/assets/109936863/a175c65d-f382-49b3-8860-eb7363a70a71)
+![image](https://github.com/JIESUN233/Legion/assets/109936863/fbbcf62a-0392-4bb7-8dc0-84b130e806ed)
 
 ### Step 3. Run Legion training backend
 **After Legion outputs "System is ready for serving",** run the training backend by artifact-user.
