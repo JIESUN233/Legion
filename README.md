@@ -17,7 +17,7 @@ Table 1
 Kc means the number of groups in which GPUs connect each other. And Kg means the number of GPUs in each group.
 
 ## Hardware We Can Support Now
-Unfortunately, the platforms above are currently unavailable. Alternatively, we offer a stable machine with two GPUs:
+Unfortunately, the platforms above are currently unavailable. Alternatively, we provide a stable machine with two GPUs:
 Table 2
 | Platform | CPU-Info | #sockets | #NUMA nodes | CPU Memory | PCIe | GPUs | NVLinks |
 | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -25,7 +25,7 @@ Table 2
 
 Currently, there is only one GPU inside Siton2. We will add another GPU and NVLinks(in transit) to it as soon as possible.(2023.5.11)
 
-We will offer the way to access Siton2 in ATC artifacts submission. 
+We will provide the way to access Siton2 in ATC artifacts submission. 
 
 ## Software 
 Legion's software is light-weighted and portable. Here we list some tested environment.
