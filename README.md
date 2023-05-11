@@ -123,7 +123,7 @@ You can change "PR" into "PA", "CO", "UKS", "UKL", "CL".
     argparser.add_argument('--hops_num', type=int, default=2)
     argparser.add_argument('--nbrs_num', type=list, default=[25, 10])
     argparser.add_argument('--epoch', type=int, default=10)
-#### Set GPU number, GPU meory limitation and NVLink usage
+#### Set GPU number, GPU meory limitation and whether to use NVLinks
     argparser.add_argument('--gpu_number', type=int, default=1)
     argparser.add_argument('--cache_memory', type=int, default=200000000)
     argparser.add_argument('--usenvlink', type=bool, default=True)
@@ -137,8 +137,10 @@ After Legion outputs "System is ready for serving", run the training backend by 
 User can modify these parameters:
 ### Set dataset statistics
 For specific numbers, please refer to Table 3(dataset).
+```
     argparser.add_argument('--class_num', type=int, default=47)
     argparser.add_argument('--features_num', type=int, default=100)
+```
 ### Set GNN hyper-parameters
     argparser.add_argument('--train_batch_size', type=int, default=8000)
     argparser.add_argument('--hidden_dim', type=int, default=256)
