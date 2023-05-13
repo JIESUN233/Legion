@@ -23,7 +23,7 @@ Table 2
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | Siton2 | 104*Intel(R) Xeon(R) Gold 5320 CPU @2.2GHZ | 2 | 2 | 500GB | PCIe 4.0x16, 2*PCIe switches, each connecting 4 GPUs | 2x40GB-A100 | NVLink Bridges, Kc = 1, Kg = 2 |
 
-Currently, there is only one GPU inside Siton2. We will add another GPU and NVLinks(in transit) to it as soon as possible.(2023.5.11)
+Currently, there is only one GPU inside Siton2. We will add another GPU and NVLinks(in transit) to it at 5.14. 
 
 We will provide the way to access Siton2 in ATC artifacts submission. 
 
