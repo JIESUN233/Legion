@@ -117,7 +117,8 @@ For specific numbers, please refer to Table 3(dataset).
     argparser.add_argument('--drop_rate', type=float, default=0.5)
     argparser.add_argument('--learning_rate', type=float, default=0.003)
     argparser.add_argument('--epoch', type=int, default=10)
-Note that the train_batch_size and epoch should be the same as sampling hyper-parameters
+    argparser.add_argument('--gpu_num', type=int, default=1)
+Note that the train_batch_size, epoch, and gpu_num should be the same as sampling hyper-parameters
 #### Start training backend
 ```
 3. $ cd pytorch-extension/ && python3 legion_graphsage.py
