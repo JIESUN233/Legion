@@ -201,8 +201,9 @@ if __name__ == "__main__":
     argparser.add_argument('--drop_rate', type=float, default=0.5)
     argparser.add_argument('--learning_rate', type=float, default=0.003)
     argparser.add_argument('--epoch', type=int, default=100)
+    argparser.add_argument('--gpu_num', type=int, default=1)
     args = argparser.parse_args()
 
-    world_size = 1
+    world_size = args.gpu_num
 
     run_distribute(worker_process, world_size, args)
