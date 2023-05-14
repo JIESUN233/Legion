@@ -67,7 +67,7 @@ We store the pre-processed datasets in path of Siton2: /home/atc-artifacts-user/
 There are four steps to train a GNN model in Legion. In these steps, you need to change into root user of Siton2.
 ### Step 1. Add environment variables temporarily
 ```
-1. $ cd legion-atc-artifacts/src/ && source env.sh
+1. $ cd /home/atc-artifacts-user/legion-atc-artifacts/src/ && source env.sh
 ```
 ### Step 2. Open msr by root for PCM
 ```
