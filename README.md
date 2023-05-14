@@ -90,7 +90,7 @@ You can change "PR" into "PA", "CO", "UKS", "UKL", "CL".
     argparser.add_argument('--usenvlink', type=bool, default=True)
 #### Start server
 ```
-3. $ cd legion-atc-artifacts/ && python3 legion_server.py
+3. $ cd /home/atc-artifacts-user/legion-atc-artifacts/ && python3 legion_server.py
 ```
 #### Sampling server functionality
 This figure shows that PCM is working.
@@ -121,7 +121,7 @@ For specific numbers, please refer to Table 3(dataset).
 Note that the train_batch_size, epoch, and gpu_num should be the same as sampling hyper-parameters
 #### Start training backend
 ```
-3. $ cd pytorch-extension/ && python3 legion_graphsage.py
+3. $ cd /home/atc-artifacts-user/legion-atc-artifacts/pytorch-extension/ && python3 legion_graphsage.py
 ```
 #### Training backend functionality
 When training backend successfully runs, system outputs information including epoch time, validation accuracy, and testing accuracy.
@@ -164,14 +164,14 @@ This will just make libxtrapulp.a static library for use with xtrapulp.h
 ### Legion Compiling
 #### Firstly, build Legion's sampling server
 ```
-1. $ cd legion-atc-artifacts/src/
+1. $ cd /home/atc-artifacts-user/legion-atc-artifacts/src/
 
 2. $ make cuda && make main
 
 ```
 #### Secondly, build Legion's training backend
 ```
-3. $ cd legion-atc-artifacts/pytorch_extension/
+3. $ cd /home/atc-artifacts-user/legion-atc-artifacts/pytorch_extension/
 ```
 Change into root user and execute:
 ```
