@@ -21,9 +21,7 @@ Unfortunately, the platforms above are currently unavailable. Alternatively, we 
 Table 2
 | Platform | CPU-Info | #sockets | #NUMA nodes | CPU Memory | PCIe | GPUs | NVLinks |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| Siton2 | 104*Intel(R) Xeon(R) Gold 5320 CPU @2.2GHZ | 2 | 2 | 500GB | PCIe 4.0x16, 2*PCIe switches, each connecting 4 GPUs | 2x40GB-A100 | NVLink Bridges, Kc = 1, Kg = 2 |
-
-Currently, there is only one GPU inside Siton2. We will add another GPU and NVLinks(in transit) to it at 5.14. 
+| Siton2 | 104*Intel(R) Xeon(R) Gold 5320 CPU @2.2GHZ | 2 | 2 | 500GB | PCIe 4.0x16, 2*PCIe switches, one connecting 2 GPUs | 2x80GB-A100 | NVLink Bridges, Kc = 1, Kg = 2 |
 
 We will provide the way to access Siton2 in ATC artifacts submission. 
 
