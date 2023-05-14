@@ -125,6 +125,7 @@ Note that the train_batch_size, epoch, and gpu_num should be the same as samplin
 ```
 #### Training backend functionality
 When training backend successfully runs, system outputs information including epoch time, validation accuracy, and testing accuracy.
+
 ![30685d2d9a729ce84d52e8b72fcc1cb](https://github.com/JIESUN233/Legion/assets/109936863/dc93be15-6576-4dd5-ab70-477741b5df28)
 
 ![image](https://github.com/JIESUN233/Legion/assets/109936863/199863c0-2ca2-4cc3-8603-f15e6b4aa2b5)
