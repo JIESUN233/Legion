@@ -87,7 +87,7 @@ You can change "PR" into "PA", "CO", "UKS", "UKL", "CL".
 #### Set GPU number, GPU meory limitation and whether to use NVLinks
     argparser.add_argument('--gpu_number', type=int, default=1)
     argparser.add_argument('--cache_memory', type=int, default=200000000)
-    argparser.add_argument('--usenvlink', type=bool, default=True)
+    argparser.add_argument('--usenvlink', type=int, default=1)## 1 means true, 0 means false
 #### Start server
 ```
 3. $ cd /home/atc-artifacts-user/legion-atc-artifacts/ && python3 legion_server.py
