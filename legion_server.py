@@ -56,7 +56,7 @@ def Run(args):
         return
 
     with open("meta_config","w") as file:
-        file.write("{} {} {} {} {} {} {} {} {} {} {}".format(path, args.train_batch_size, vertices_num, edges_num, features_dim, train_set_num, valid_set_num, test_set_num, args.cache_memory, args.epoch, int(args.usenvlink)))
+        file.write("{} {} {} {} {} {} {} {} {} {} {}".format(path, args.train_batch_size, vertices_num, edges_num, features_dim, train_set_num, valid_set_num, test_set_num, args.cache_memory, args.epoch, 1-int(args.usenvlink)))
 
 
     gpu_number = args.gpu_number
