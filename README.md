@@ -86,8 +86,8 @@ You can change "PR" into "PA", "CO", "UKS", "UKL", "CL".
     argparser.add_argument('--epoch', type=int, default=10)
 #### Set GPU number, GPU meory limitation and whether to use NVLinks
     argparser.add_argument('--gpu_number', type=int, default=1)
-    argparser.add_argument('--cache_memory', type=int, default=200000000)
-    argparser.add_argument('--usenvlink', type=int, default=1)## 1 means true, 0 means false
+    argparser.add_argument('--cache_memory', type=int, default=200000000) ## default is 200000000 Bytes
+    argparser.add_argument('--usenvlink', type=int, default=1)## 1 means true, 0 means false.
 #### Start server
 ```
 3. $ cd /home/atc-artifacts-user/legion-atc-artifacts/ && python3 legion_server.py
@@ -112,7 +112,7 @@ For specific numbers, please refer to Table 3(dataset).
     argparser.add_argument('--features_num', type=int, default=100)
 ```
 #### Set GNN hyper-parameters
-    argparser.add_argument('--train_batch_size', type=int, default=8000)
+    argparser.add_argument('--train_batch_size', type=int, default=8000) 
     argparser.add_argument('--hidden_dim', type=int, default=256)
     argparser.add_argument('--drop_rate', type=float, default=0.5)
     argparser.add_argument('--learning_rate', type=float, default=0.003)
