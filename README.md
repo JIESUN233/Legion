@@ -112,12 +112,14 @@ For specific numbers, please refer to Table 3(dataset).
     argparser.add_argument('--features_num', type=int, default=100)
 ```
 #### Set GNN hyper-parameters
+    These are the default setting in Legion.
     argparser.add_argument('--train_batch_size', type=int, default=8000) 
     argparser.add_argument('--hidden_dim', type=int, default=256)
     argparser.add_argument('--drop_rate', type=float, default=0.5)
     argparser.add_argument('--learning_rate', type=float, default=0.003)
     argparser.add_argument('--epoch', type=int, default=10)
-    argparser.add_argument('--gpu_num', type=int, default=1)
+    argparser.add_argument('--gpu_num', type=int, default=1) 
+    
 Note that the train_batch_size, epoch, and gpu_num should be the same as sampling hyper-parameters
 #### Start training backend
 ```
