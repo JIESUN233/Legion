@@ -101,6 +101,7 @@ This figure shows the system outputs including dataset statistics, training stat
 
 ![fe485222ae227d406bab1068eb1bed9](https://github.com/JIESUN233/Legion/assets/109936863/0c8476a8-81b7-4bbc-98a5-e926e9a80931)
 
+
 ### Step 4. Run Legion training backend
 **After Legion outputs "System is ready for serving",** run the training backend by artifact-user.
 "legion_graphsage.py" and "legion_gcn.py" trains the GraphSAGE/GCN models, respectively.
@@ -136,6 +137,35 @@ When training backend successfully runs, system outputs information including ep
 If SEGMENT-FAULT occurs or you kill Legion's processes, please remove semaphores in /dev/shm, for example:
 ![14b24058fbcfe5bf0648f0d7082686a](https://github.com/JIESUN233/Legion/assets/109936863/c80f6453-6eda-4978-8655-3475cf045457)
 
+### Reproduce results in paper
+For end-to-end performance, we use 16GB V100 memory and 40GB A100 memory.
+Figure 8, DGX-V100, hyper-parameters:
+| Datasets | PR | PA | CO | UKS |
+| --- | --- | --- | --- | --- | 
+| train_batch_size | 8000 | 8000 | 8000 | 8000 |
+| epoch | 10 | 10 | 10 | 10 | 
+| gpu_number | 8 | 8 | 8 | 8 | 
+| cache_memory | 14GB | 14GB | 12GB | 12GB |
+| usenvlink | 1 | 1 | 1 | 1 | 
+| class_num | 47 | 2 | 2 | 2 | 
+| features_num | 100 | 128 | 256 | 256 | 
+| hidden_dim | 256 | 256 | 256 | 256 |
+| drop_rate | 0.5 | 0.5 | 0.5 | 0.5 | 
+| learning_rate | 0.003 | 0.003 | 0.003 | 0.003 | 
+
+Figure 8, DGX-A100, hyper-parameters:
+| Datasets | PR | PA | CO | UKS | UKL | CL |
+| --- | --- | --- | --- | --- |  --- | --- | 
+| train_batch_size | 8000 | 8000 | 8000 | 8000 | 8000 | 8000 |
+| epoch | 10 | 10 | 10 | 10 | 10 | 10 | 
+| gpu_number | 8 | 8 | 8 | 8 |  8 | 8 | 
+| cache_memory | 38GB | 38GB | 36GB | 36GB | 38GB | 38GB |
+| usenvlink | 1 | 1 | 1 | 1 | 1 | 1 | 
+| class_num | 47 | 2 | 2 | 2 | 2 | 2 | 
+| features_num | 100 | 128 | 256 | 256 | 128 | 128 |
+| hidden_dim | 256 | 256 | 256 | 256 | 256 | 256 |
+| drop_rate | 0.5 | 0.5 | 0.5 | 0.5 | 0.5 | 0.5 | 
+| learning_rate | 0.003 | 0.003 | 0.003 | 0.003 | 0.003 | 0.003 | 
 
 ## Build Legion from Source
 ```
