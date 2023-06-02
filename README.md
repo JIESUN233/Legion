@@ -138,14 +138,13 @@ If SEGMENT-FAULT occurs or you kill Legion's processes, please remove semaphores
 ![14b24058fbcfe5bf0648f0d7082686a](https://github.com/JIESUN233/Legion/assets/109936863/c80f6453-6eda-4978-8655-3475cf045457)
 
 ### Step 5. Reproduce results in paper
-For end-to-end performance, we use 16GB V100 memory and 40GB A100 memory.
 Figure 8, DGX-V100, hyper-parameters:
 | Datasets | PR | PA | CO | UKS |
 | --- | --- | --- | --- | --- | 
 | train_batch_size | 8000 | 8000 | 8000 | 8000 |
 | epoch | 10 | 10 | 10 | 10 | 
 | gpu_number | 8 | 8 | 8 | 8 | 
-| cache_memory | 14GB | 14GB | 12GB | 12GB |
+| cache_memory | 13GB | 13GB | 11GB | 11GB |
 | usenvlink | 1 | 1 | 1 | 1 | 
 | class_num | 47 | 2 | 2 | 2 | 
 | features_num | 100 | 128 | 256 | 256 | 
@@ -159,7 +158,7 @@ Figure 8, DGX-A100, hyper-parameters:
 | train_batch_size | 8000 | 8000 | 8000 | 8000 | 8000 | 8000 |
 | epoch | 10 | 10 | 10 | 10 | 10 | 10 | 
 | gpu_number | 8 | 8 | 8 | 8 |  8 | 8 | 
-| cache_memory | 38GB | 38GB | 36GB | 36GB | 38GB | 38GB |
+| cache_memory | 36GB | 36GB | 32GB | 32GB | 36GB | 36GB |
 | usenvlink | 1 | 1 | 1 | 1 | 1 | 1 | 
 | class_num | 47 | 2 | 2 | 2 | 2 | 2 | 
 | features_num | 100 | 128 | 256 | 256 | 128 | 128 |
