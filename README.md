@@ -167,7 +167,6 @@ Figure 8, DGX-A100, hyper-parameters:
 | drop_rate | 0.5 | 0.5 | 0.5 | 0.5 | 0.5 | 0.5 | 
 | learning_rate | 0.003 | 0.003 | 0.003 | 0.003 | 0.003 | 0.003 | 
 
-For end-to-end performance, we use 16GB V100 memory and 40GB A100 memory.
 
 
 ## Build Legion from Source
