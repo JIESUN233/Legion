@@ -137,7 +137,7 @@ When training backend successfully runs, system outputs information including ep
 If SEGMENT-FAULT occurs or you kill Legion's processes, please remove semaphores in /dev/shm, for example:
 ![14b24058fbcfe5bf0648f0d7082686a](https://github.com/JIESUN233/Legion/assets/109936863/c80f6453-6eda-4978-8655-3475cf045457)
 
-### Reproduce results in paper
+### Step 5. Reproduce results in paper
 For end-to-end performance, we use 16GB V100 memory and 40GB A100 memory.
 Figure 8, DGX-V100, hyper-parameters:
 | Datasets | PR | PA | CO | UKS |
@@ -166,6 +166,9 @@ Figure 8, DGX-A100, hyper-parameters:
 | hidden_dim | 256 | 256 | 256 | 256 | 256 | 256 |
 | drop_rate | 0.5 | 0.5 | 0.5 | 0.5 | 0.5 | 0.5 | 
 | learning_rate | 0.003 | 0.003 | 0.003 | 0.003 | 0.003 | 0.003 | 
+
+For end-to-end performance, we use 16GB V100 memory and 40GB A100 memory.
+
 
 ## Build Legion from Source
 ```
