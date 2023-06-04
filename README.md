@@ -5,7 +5,8 @@
 Legion is a system for large-scale GNN training. Legion uses GPU to accelerate graph sampling, feature extraction and GNN training. And Legion utilizes multi-GPU memory as unified cache to minimize PCIe traffic. In this repo, we provide Legion's prototype and show how to run Legion. We provide two ways to build Legion: 1. building from source, 2. using pre-installed Legion. For artifacts evaluation, we recommend using the pre-installed Legion. Due to the machine limitation, we only show the functionality of Legion in the pre-installed environment.
 
 
-## 1. Hardware Used in Our Paper
+## 1. Hardware 
+### Hardware Used in Our Paper
 All platforms are bare-metal machines.
 Table 1
 | Platform | CPU-Info | #sockets | #NUMA nodes | CPU Memory | PCIe | GPUs | NVLinks |
@@ -16,7 +17,7 @@ Table 1
 
 Kc means the number of groups in which GPUs connect each other. And Kg means the number of GPUs in each group.
 
-## 2. Hardware We Can Support Now
+### Hardware We Can Support Now
 Unfortunately, the platforms above are currently unavailable. Alternatively, we provide a stable machine with two GPUs:
 Table 2
 | Platform | CPU-Info | #sockets | #NUMA nodes | CPU Memory | PCIe | GPUs | NVLinks |
@@ -25,7 +26,7 @@ Table 2
 
 We will provide the way to access Siton2 in ATC artifacts submission. 
 
-## 3. Software 
+## 2. Software 
 Legion's software is light-weighted and portable. Here we list some tested environment.
 
 1. Nvidia Driver Version: 515.43.04(DGX-A100, Siton, Siton2), 470.82.01(V100)
@@ -50,7 +51,7 @@ $ pip3 install  dgl -f https://data.dgl.ai/wheels/cu1xx/repo.html
 ```
 8. MPI
 
-## 4. Datasets
+## 3. Datasets
 Table 3
 | Datasets | PR | PA | CO | UKS | UKL | CL |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -63,7 +64,7 @@ Table 3
 
 We store the pre-processed datasets in path of Siton2: /home/atc-artifacts-user/datasets. We also place the partitioning result for demos in Siton2 so that you needn't wait a lot of time for partitioning.
 
-## 5. Use Pre-installed Legion
+## 4. Use Pre-installed Legion
 There are four steps to train a GNN model in Legion. In these steps, you need to change into root user of Siton2.
 ### Step 1. Add environment variables temporarily
 ```
@@ -221,7 +222,7 @@ If SEGMENT-FAULT occurs or you kill Legion's processes, please remove semaphores
 All systems will output the epoch time of each setting. Users need to use a external PCM tool to collect maximum PCIe traffic among different sockets.
 
 
-## 6. Legion Code Structure
+## 5. Legion Code Structure
 To help users understand Legion's implementation, we list the code structure in this part.
 ```
 legion-atc-artifacts\
@@ -254,7 +255,7 @@ legion-atc-artifacts\pytorch_extension\
 ├─ipc_service.cpp ipc_service.h ipc_cuda_kernel.cu  ## inter process communication module for training backend with sampling server
 └Others
 ```
-## 7. Build Legion from Source
+## 6. Build Legion from Source
 ```
 $ git clone https://github.com/JIESUN233/Legion.git
 ```
