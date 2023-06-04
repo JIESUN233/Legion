@@ -139,6 +139,7 @@ If SEGMENT-FAULT occurs or you kill Legion's processes, please remove semaphores
 ![14b24058fbcfe5bf0648f0d7082686a](https://github.com/JIESUN233/Legion/assets/109936863/c80f6453-6eda-4978-8655-3475cf045457)
 
 ### Step 5. Specific hyper-parameter settings to reproduce results in paper
+To reproduce the results in paper, we need a 8-GPU machine and run the Python scripts, legion_server.py legion_graphsage.py for graphsage model. (legion_gcn.py for gcn model). The hyper-parameters in Python scripts are shown below.
 #### Figure 8 DGX-V100, Legion hyper-parameters:
 | Datasets | PR | PA | CO | UKS |
 | --- | --- | --- | --- | --- | 
