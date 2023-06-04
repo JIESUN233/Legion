@@ -137,8 +137,9 @@ When training backend successfully runs, system outputs information including ep
 If SEGMENT-FAULT occurs or you kill Legion's processes, please remove semaphores in /dev/shm, for example:
 ![14b24058fbcfe5bf0648f0d7082686a](https://github.com/JIESUN233/Legion/assets/109936863/c80f6453-6eda-4978-8655-3475cf045457)
 
-### Step 5. Reproduce results in paper
-Figure 8, DGX-V100, hyper-parameters:
+### Step 5. Specific hyper-parameter settings to reproduce results in paper
+#### Figure 8
+DGX-V100, Legion hyper-parameters:
 | Datasets | PR | PA | CO | UKS |
 | --- | --- | --- | --- | --- | 
 | train_batch_size | 8000 | 8000 | 8000 | 8000 |
@@ -152,7 +153,47 @@ Figure 8, DGX-V100, hyper-parameters:
 | drop_rate | 0.5 | 0.5 | 0.5 | 0.5 | 
 | learning_rate | 0.003 | 0.003 | 0.003 | 0.003 | 
 
-Figure 8, DGX-A100, hyper-parameters:
+DGX-V100, PaGraph hyper-parameters:
+| Datasets | PR | PA | CO | UKS |
+| --- | --- | --- | --- | --- |
+| train_batch_size | 8000 | OOM | OOM | OOM |
+| epoch | 10 | OOM | OOM | OOM |
+| gpu number | 8 | OOM | OOM |  OOM |
+| feature cache ratio | 100% | OOM | OOM |  OOM |
+| CPU threads | 64 | OOM | OOM |  OOM |
+| class_num | 47 | OOM | OOM | OOM |
+| features_num | 100 | OOM | OOM | OOM |
+| hidden_dim | 256 | OOM | OOM | OOM |
+| drop_rate | 0.5 | OOM | OOM | OOM |
+| learning_rate | 0.003 | OOM | OOM | OOM |
+
+DGX-V100, GNNLab hyper-parameters:
+| Datasets | PR | PA | CO | UKS |
+| --- | --- | --- | --- | --- |
+| train_batch_size | 8000 | 8000 | 8000 | OOM |
+| epoch | 10 | 10 | 10 | OOM |
+| sampling gpu number | 4 | 2 | 1 |  OOM |
+| training gpu number | 4 | 6 | 7 |  OOM |
+| feature cache ratioo | 100% | 24% | 18% |  OOM |
+| class_num | 47 | 2 | 2 | OOM |
+| features_num | 100 | 128 | 256 | OOM |
+| hidden_dim | 256 | 256 | 256 | OOM |
+| drop_rate | 0.5 | 0.5 | 0.5 | OOM |
+| learning_rate | 0.003 | 0.003 | 0.003 | OOM |
+
+DGX-V100, DGL(UVA) hyper-parameters:
+| Datasets | PR | PA | CO | UKS |
+| --- | --- | --- | --- | --- | 
+| train_batch_size | 8000 | 8000 | 8000 | 8000 |
+| epoch | 10 | 10 | 10 | 10 | 
+| gpu_number | 8 | 8 | 8 | 8 | 
+| class_num | 47 | 2 | 2 | 2 | 
+| features_num | 100 | 128 | 256 | 256 | 
+| hidden_dim | 256 | 256 | 256 | 256 |
+| drop_rate | 0.5 | 0.5 | 0.5 | 0.5 | 
+| learning_rate | 0.003 | 0.003 | 0.003 | 0.003 | 
+
+DGX-A100, Legion hyper-parameters:
 | Datasets | PR | PA | CO | UKS | UKL | CL |
 | --- | --- | --- | --- | --- |  --- | --- | 
 | train_batch_size | 8000 | 8000 | 8000 | 8000 | 8000 | 8000 |
@@ -166,7 +207,19 @@ Figure 8, DGX-A100, hyper-parameters:
 | drop_rate | 0.5 | 0.5 | 0.5 | 0.5 | 0.5 | 0.5 | 
 | learning_rate | 0.003 | 0.003 | 0.003 | 0.003 | 0.003 | 0.003 | 
 
+DGX-A100, DGL hyper-parameters:
+| Datasets | PR | PA | CO | UKS | UKL | CL |
+| --- | --- | --- | --- | --- |  --- | --- | 
+| train_batch_size | 8000 | 8000 | 8000 | 8000 | 8000 | 8000 |
+| epoch | 10 | 10 | 10 | 10 | 10 | 10 | 
+| gpu_number | 8 | 8 | 8 | 8 |  8 | 8 | 
+| class_num | 47 | 2 | 2 | 2 | 2 | 2 | 
+| features_num | 100 | 128 | 256 | 256 | 128 | 128 |
+| hidden_dim | 256 | 256 | 256 | 256 | 256 | 256 |
+| drop_rate | 0.5 | 0.5 | 0.5 | 0.5 | 0.5 | 0.5 | 
+| learning_rate | 0.003 | 0.003 | 0.003 | 0.003 | 0.003 | 0.003 | 
 
+All systems will output the epoch time of each setting. Users need to use a external PCM tool to collect maximum PCIe traffic among different sockets.
 
 ## Build Legion from Source
 ```
@@ -194,6 +247,9 @@ This will just make libxtrapulp.a static library for use with xtrapulp.h
 3. $ make libxtrapulp
 ```
 
+## Legion Code Structure
+
+
 
 ### Legion Compiling
 #### Firstly, build Legion's sampling server
@@ -214,5 +270,8 @@ Change into root user and execute:
 
 ### Run Legion
 Similar to the way in using pre-installed Legion
+
+
+
 
 
