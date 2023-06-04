@@ -173,7 +173,7 @@ If SEGMENT-FAULT occurs or you kill Legion's processes, please remove semaphores
 | epoch | 10 | 10 | 10 | OOM |
 | sampling gpu number | 4 | 2 | 1 |  OOM |
 | training gpu number | 4 | 6 | 7 |  OOM |
-| feature cache ratioo | 100% | 24% | 18% |  OOM |
+| feature cache ratio | 100% | 24% | 18% |  OOM |
 | class_num | 47 | 2 | 2 | OOM |
 | features_num | 100 | 128 | 256 | OOM |
 | hidden_dim | 256 | 256 | 256 | OOM |
@@ -206,7 +206,7 @@ If SEGMENT-FAULT occurs or you kill Legion's processes, please remove semaphores
 | drop_rate | 0.5 | 0.5 | 0.5 | 0.5 | 0.5 | 0.5 | 
 | learning_rate | 0.003 | 0.003 | 0.003 | 0.003 | 0.003 | 0.003 | 
 
-#### Figure 8 DGX-A100, DGL hyper-parameters:
+#### Figure 8 DGX-A100, DGL(UVA) hyper-parameters:
 | Datasets | PR | PA | CO | UKS | UKL | CL |
 | --- | --- | --- | --- | --- |  --- | --- | 
 | train_batch_size | 8000 | 8000 | 8000 | 8000 | 8000 | 8000 |
@@ -219,6 +219,39 @@ If SEGMENT-FAULT occurs or you kill Legion's processes, please remove semaphores
 | learning_rate | 0.003 | 0.003 | 0.003 | 0.003 | 0.003 | 0.003 | 
 
 All systems will output the epoch time of each setting. Users need to use a external PCM tool to collect maximum PCIe traffic among different sockets.
+
+
+## Legion Code Structure
+To help users understand Legion's implementation, we list the code structure in this part.
+legion-atc-artifacts\
+├─legion_server.py 
+├─src\ codes of sampling server
+└pytorch_extension\ ## codes of training backend
+
+legion-atc-artifacts\src\
+├─main.cpp ## sampling server main
+├─Server.cu, Server.h ## implementation of sampling server 
+├─GPUGraphStore.cu, GPUGraphStore.cuh ## initializing of graph storage
+├─GPU_Memory_Graph_Storage.cu GPU_Graph_Storage.cuh ## graph topology storage
+├─GPU_Memory_Node_Storage.cu GPU_Node_Storage.cuh ## graph features storage
+├─Operator.cu Operator.h ## graph operators in fine-grained pipeline
+├─Kernels.cu Kernels.cuh ## CUDA implimentation of each operators
+├─GPUCache.cu GPUCache.cuh ## unified cache management
+├─GPUMemoryPool.cu GPUMemoryPool.cuh ## internal buffers in system
+├─CUDA_IPC_Service.cu CUDA_IPC_Service.h ## inter process communication module for sampling server with training backend
+├─Makefile
+├─env.sh ## setting enviromental variables
+├─build/ ## pcm library
+├─pcm/src/ ## pcm source code
+├─include/ ## hashmap implementation
+└Others
+
+legion-atc-artifacts\pytorch_extension\
+├─legion_graphsage.py ## training backend for graphsage model
+├─legion_gcn.py  ## training backend for gcn model
+├─setup.py ## compiling the training backend
+├─ipc_service.cpp ipc_service.h ipc_cuda_kernel.cu ## inter process communication module for training backend with sampling server
+└Others
 
 ## Build Legion from Source
 ```
@@ -245,10 +278,6 @@ This will just make libxtrapulp.a static library for use with xtrapulp.h
 ```
 3. $ make libxtrapulp
 ```
-
-## Legion Code Structure
-
-
 
 ### Legion Compiling
 #### Firstly, build Legion's sampling server
