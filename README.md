@@ -226,8 +226,8 @@ To help users understand Legion's implementation, we list the code structure in 
 ```
 legion-atc-artifacts\
 ├─legion_server.py 
-├─src\ codes of sampling server
-└pytorch_extension\ ## codes of training backend
+├─src\                                                                           ##codes of sampling server
+└pytorch_extension\                                                              ## codes of training backend
 
 legion-atc-artifacts\src\
 ├─main.cpp ## sampling server main
