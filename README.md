@@ -138,8 +138,7 @@ If SEGMENT-FAULT occurs or you kill Legion's processes, please remove semaphores
 ![14b24058fbcfe5bf0648f0d7082686a](https://github.com/JIESUN233/Legion/assets/109936863/c80f6453-6eda-4978-8655-3475cf045457)
 
 ### Step 5. Specific hyper-parameter settings to reproduce results in paper
-#### Figure 8
-DGX-V100, Legion hyper-parameters:
+#### Figure 8 DGX-V100, Legion hyper-parameters:
 | Datasets | PR | PA | CO | UKS |
 | --- | --- | --- | --- | --- | 
 | train_batch_size | 8000 | 8000 | 8000 | 8000 |
@@ -153,7 +152,7 @@ DGX-V100, Legion hyper-parameters:
 | drop_rate | 0.5 | 0.5 | 0.5 | 0.5 | 
 | learning_rate | 0.003 | 0.003 | 0.003 | 0.003 | 
 
-DGX-V100, PaGraph hyper-parameters:
+#### Figure 8 DGX-V100, PaGraph hyper-parameters:
 | Datasets | PR | PA | CO | UKS |
 | --- | --- | --- | --- | --- |
 | train_batch_size | 8000 | OOM | OOM | OOM |
@@ -167,7 +166,7 @@ DGX-V100, PaGraph hyper-parameters:
 | drop_rate | 0.5 | OOM | OOM | OOM |
 | learning_rate | 0.003 | OOM | OOM | OOM |
 
-DGX-V100, GNNLab hyper-parameters:
+#### Figure 8 DGX-V100, GNNLab hyper-parameters:
 | Datasets | PR | PA | CO | UKS |
 | --- | --- | --- | --- | --- |
 | train_batch_size | 8000 | 8000 | 8000 | OOM |
@@ -181,7 +180,7 @@ DGX-V100, GNNLab hyper-parameters:
 | drop_rate | 0.5 | 0.5 | 0.5 | OOM |
 | learning_rate | 0.003 | 0.003 | 0.003 | OOM |
 
-DGX-V100, DGL(UVA) hyper-parameters:
+#### Figure 8 DGX-V100, DGL(UVA) hyper-parameters:
 | Datasets | PR | PA | CO | UKS |
 | --- | --- | --- | --- | --- | 
 | train_batch_size | 8000 | 8000 | 8000 | 8000 |
@@ -193,7 +192,7 @@ DGX-V100, DGL(UVA) hyper-parameters:
 | drop_rate | 0.5 | 0.5 | 0.5 | 0.5 | 
 | learning_rate | 0.003 | 0.003 | 0.003 | 0.003 | 
 
-DGX-A100, Legion hyper-parameters:
+#### Figure 8 DGX-A100, Legion hyper-parameters:
 | Datasets | PR | PA | CO | UKS | UKL | CL |
 | --- | --- | --- | --- | --- |  --- | --- | 
 | train_batch_size | 8000 | 8000 | 8000 | 8000 | 8000 | 8000 |
@@ -207,7 +206,7 @@ DGX-A100, Legion hyper-parameters:
 | drop_rate | 0.5 | 0.5 | 0.5 | 0.5 | 0.5 | 0.5 | 
 | learning_rate | 0.003 | 0.003 | 0.003 | 0.003 | 0.003 | 0.003 | 
 
-DGX-A100, DGL hyper-parameters:
+#### Figure 8 DGX-A100, DGL hyper-parameters:
 | Datasets | PR | PA | CO | UKS | UKL | CL |
 | --- | --- | --- | --- | --- |  --- | --- | 
 | train_batch_size | 8000 | 8000 | 8000 | 8000 | 8000 | 8000 |
