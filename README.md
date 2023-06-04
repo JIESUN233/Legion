@@ -223,6 +223,7 @@ All systems will output the epoch time of each setting. Users need to use a exte
 
 ## Legion Code Structure
 To help users understand Legion's implementation, we list the code structure in this part.
+```
 legion-atc-artifacts\
 ├─legion_server.py 
 ├─src\ codes of sampling server
@@ -252,7 +253,7 @@ legion-atc-artifacts\pytorch_extension\
 ├─setup.py ## compiling the training backend
 ├─ipc_service.cpp ipc_service.h ipc_cuda_kernel.cu ## inter process communication module for training backend with sampling server
 └Others
-
+```
 ## Build Legion from Source
 ```
 $ git clone https://github.com/JIESUN233/Legion.git
